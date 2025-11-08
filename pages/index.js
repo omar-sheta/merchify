@@ -16,21 +16,21 @@ export default function Home() {
   useEffect(() => {
     async function loadFeed() {
       try {
-        const res = await fetch('/api/feed')
-        const json = await res.json()
+        const res = await fetch('/api/feed');
+        const json = await res.json();
         if (json.items && json.items.length) {
-          setVideos(json.items)
-          setActiveVideo(json.items[0])
+          setVideos(json.items);
+          setActiveVideo(json.items[0]); // Ensure the first video is set as active
           // generate client-side thumbnails from the video files (same-origin)
           if (typeof window !== 'undefined') {
             generateThumbnails(json.items)
           }
         }
       } catch (err) {
-        console.error('Failed to load feed', err)
+        console.error('Failed to load feed', err);
       }
     }
-    loadFeed()
+    loadFeed();
   }, [])
 
   // Attach video event listeners to update the live preview
@@ -129,31 +129,31 @@ export default function Home() {
   }
 
   function captureFrame() {
-    // If there's an active HTMLVideoElement, capture from it. Otherwise fall back to static image.
-    const videoEl = videoRef.current
+    const videoEl = videoRef.current;
     if (videoEl && videoEl.videoWidth && videoEl.videoHeight) {
-      const canvas = document.createElement('canvas')
-      canvas.width = videoEl.videoWidth
-      canvas.height = videoEl.videoHeight
-      const ctx = canvas.getContext('2d')
+      const canvas = document.createElement('canvas');
+      canvas.width = videoEl.videoWidth;
+      canvas.height = videoEl.videoHeight;
+      const ctx = canvas.getContext('2d');
       try {
-        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height)
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.88)
-        setCapturedFrame(dataUrl)
+        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+        setCapturedFrame(dataUrl);
+        setPreviewFrame(dataUrl); // Update preview dynamically
         if (typeof window !== 'undefined') {
-          sessionStorage.setItem('capturedFrame', dataUrl)
+          sessionStorage.setItem('capturedFrame', dataUrl);
         }
-        return
+        return;
       } catch (err) {
-        // drawing may fail if the video is cross-origin; fall back to static image
-        console.warn('capture failed, falling back to static image', err)
+        console.warn('Capture failed, falling back to static image', err);
       }
     }
 
-    const imageUrl = FALLBACK_CAPTURE_IMAGE
-    setCapturedFrame(imageUrl)
+    const imageUrl = FALLBACK_CAPTURE_IMAGE;
+    setCapturedFrame(imageUrl);
+    setPreviewFrame(imageUrl); // Fallback to static image
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem('capturedFrame', imageUrl)
+      sessionStorage.setItem('capturedFrame', imageUrl);
     }
   }
 
@@ -165,7 +165,7 @@ export default function Home() {
     lastPreviewRef.current = now
     const videoEl = videoRef.current
     if (!videoEl || !videoEl.videoWidth || !videoEl.videoHeight) {
-      setPreviewFrame(activeVideo?.poster || FALLBACK_CAPTURE_IMAGE)
+      setPreviewFrame(capturedFrame || activeVideo?.thumb || activeVideo?.poster || FALLBACK_CAPTURE_IMAGE)
       return
     }
     try {
@@ -177,10 +177,16 @@ export default function Home() {
       const dataUrl = canvas.toDataURL('image/jpeg', 0.6)
       setPreviewFrame(dataUrl)
     } catch (err) {
-      // cross-origin drawImage may fail
-      setPreviewFrame(activeVideo?.poster || FALLBACK_CAPTURE_IMAGE)
+      setPreviewFrame(capturedFrame || activeVideo?.thumb || activeVideo?.poster || FALLBACK_CAPTURE_IMAGE)
     }
   }
+
+  // when an active video's generated thumbnail becomes available, use it for the preview
+  useEffect(() => {
+    if (activeVideo?.thumb) {
+      setPreviewFrame(activeVideo.thumb)
+    }
+  }, [activeVideo?.thumb, activeVideo?.id])
 
   return (
     <div className="bg-gradient-to-b from-slate-50 via-white to-blue-50 min-h-screen">
@@ -228,36 +234,33 @@ export default function Home() {
                 controls
                 className="w-full max-h-[500px] bg-black rounded-xl"
                 src={activeVideo.src}
-                poster={activeVideo.poster}
+                poster={undefined}
+                onLoadedData={e => { e.target.currentTime = 0; }}
               />
             ) : (
-              <div className="flex items-center justify-center min-h-[300px] bg-black rounded-xl overflow-auto">
-                <img
-                  src={FALLBACK_CAPTURE_IMAGE}
-                  alt="Captured frame preview"
-                  className="rounded-xl shadow-lg border border-gray-200 bg-black"
-                  style={{ display: 'block', maxWidth: '100%', height: 'auto' }}
+              videos.length > 0 && (
+                <video
+                  ref={videoRef}
+                  controls
+                  className="w-full max-h-[500px] bg-black rounded-xl"
+                  src={videos[0].src}
+                  poster={undefined}
+                  onLoadedData={e => { e.target.currentTime = 0; }}
                 />
-              </div>
+              )
             )}
 
-            <div className="mt-4">
-              {/* preview area: shows a small, ready preview taken from the video itself */}
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  <h4 className="text-sm text-gray-400 mb-2">Live Preview</h4>
-                  <div className="w-full bg-black rounded-lg overflow-hidden border border-gray-800">
-                    <img src={previewFrame || activeVideo?.poster || FALLBACK_CAPTURE_IMAGE} alt="live preview" className="w-full h-44 object-cover" />
-                  </div>
-                </div>
-                <div className="w-48">
-                  <h4 className="text-sm text-gray-400 mb-2">Current Selection</h4>
-                  <div className="rounded-lg overflow-hidden border border-gray-200">
-                    <img src={activeVideo?.thumb || activeVideo?.poster || FALLBACK_CAPTURE_IMAGE} alt={activeVideo?.title || 'selected'} className="w-full h-28 object-cover" />
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Ensure playback works by setting activeVideo to the first video */}
+            {videos.length > 0 && !activeVideo && (
+              <video
+                ref={videoRef}
+                controls
+                className="w-full max-h-[500px] bg-black rounded-xl"
+                src={videos[0].src}
+                poster={undefined}
+                onLoadedData={e => { e.target.currentTime = 0; }}
+              />
+            )}
           </div>
 
           {/* Move the full video list below the player so users can choose another video */}
