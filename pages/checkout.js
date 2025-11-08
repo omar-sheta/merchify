@@ -3,6 +3,9 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { saveDesign } from '../lib/firestore'
+import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
+import SectionHeading from '../components/ui/SectionHeading'
 
 export default function Checkout() {
   const router = useRouter()
@@ -137,143 +140,137 @@ export default function Checkout() {
   }
 
   return (
-    <div className="bg-gradient-to-b from-slate-50 via-white to-pink-50 min-h-screen py-12">
+    <div className="min-h-screen py-12" style={{background:'var(--brand-bg)'}}>
       <Head>
         <title>Checkout — Merchify</title>
       </Head>
 
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="inline-flex items-center px-3 py-1 bg-pink-100 rounded-full text-sm font-medium text-pink-700 mb-4">
-            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            Step 3 of 3 — Complete Your Order
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-            <span className="bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent">Checkout</span>
-          </h1>
-          <p className="text-xl text-gray-600">Review your order and enter shipping details</p>
-        </div>
+        <SectionHeading
+          eyebrow="Step 3 of 3 — Checkout"
+          title="Wrap it up and we print"
+          subtitle="Confirm shipping details and place your order. Your captured frame is ready to become merch."
+          align="left"
+          className="mb-6"
+        />
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Shipping Form */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Shipping Information</h2>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="John Doe"
-                  />
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Contact Section */}
+              <Card padding="p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      placeholder="john@example.com"
+                    />
+                  </div>
                 </div>
+              </Card>
 
-                <div className="md:col-span-2">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="john@example.com"
-                  />
+              {/* Shipping Section */}
+              <Card padding="p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Shipping</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                      Street Address *
+                    </label>
+                    <input
+                      type="text"
+                      id="address"
+                      name="address"
+                      required
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      placeholder="123 Main St"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                      City *
+                    </label>
+                    <input
+                      type="text"
+                      id="city"
+                      name="city"
+                      required
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      placeholder="New York"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
+                      ZIP Code *
+                    </label>
+                    <input
+                      type="text"
+                      id="zipCode"
+                      name="zipCode"
+                      required
+                      value={formData.zipCode}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      placeholder="10001"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                      Country *
+                    </label>
+                    <select
+                      id="country"
+                      name="country"
+                      required
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                    >
+                      <option>United States</option>
+                      <option>Canada</option>
+                      <option>United Kingdom</option>
+                      <option>Australia</option>
+                    </select>
+                  </div>
                 </div>
+              </Card>
 
-                <div className="md:col-span-2">
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                    Street Address *
-                  </label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    required
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="123 Main St"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                    City *
-                  </label>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    required
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="New York"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
-                    ZIP Code *
-                  </label>
-                  <input
-                    type="text"
-                    id="zipCode"
-                    name="zipCode"
-                    required
-                    value={formData.zipCode}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="10001"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
-                    Country *
-                  </label>
-                  <select
-                    id="country"
-                    name="country"
-                    required
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  >
-                    <option>United States</option>
-                    <option>Canada</option>
-                    <option>United Kingdom</option>
-                    <option>Australia</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="mt-8 flex gap-4">
-                <Link 
-                  href="/customize"
-                  className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-xl transition-all text-center"
-                >
-                  ← Back to Customize
+              <div className="flex gap-4 pt-2">
+                <Link href="/customize" className="flex-1">
+                  <Button variant="subtle" className="w-full">← Back to Customize</Button>
                 </Link>
-                <button
-                  type="submit"
-                  disabled={isProcessing}
-                  className="flex-1 bg-gradient-to-r from-pink-600 to-red-600 hover:from-pink-700 hover:to-red-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-3 px-6 rounded-xl transition-all disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center"
-                >
+                <Button type="submit" disabled={isProcessing} variant="primary" className="flex-1">
                   {isProcessing ? (
                     <>
                       <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
@@ -290,17 +287,17 @@ export default function Checkout() {
                       </svg>
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 sticky top-24">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Order Summary</h2>
+            <Card className="sticky top-24" padding="p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
 
-              <div className="mb-6">
+              <div className="mb-5">
                 <img 
                   src={orderData.mockupImage || orderData.capturedFrame} 
                   alt="Your merch mockup" 
@@ -312,15 +309,15 @@ export default function Checkout() {
                     <div className="text-sm text-gray-600 whitespace-pre-wrap">{orderData.prompt}</div>
                   </div>
                 )}
-                <div className="text-lg font-semibold text-gray-900 mb-1">
+                <div className="text-base font-semibold text-gray-900 mb-1">
                   {orderData.product.icon} {orderData.product.name}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-xs text-gray-600">
                   Color: {orderData.color.name} | Size: {orderData.size} | Qty: {orderData.quantity}
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-4 space-y-3">
+              <div className="border-t border-gray-200 pt-4 space-y-2 text-sm">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
                   <span>${orderData.totalPrice}</span>
@@ -333,18 +330,16 @@ export default function Checkout() {
                   <span>Tax</span>
                   <span>${(parseFloat(orderData.totalPrice) * 0.1).toFixed(2)}</span>
                 </div>
-                <div className="border-t border-gray-200 pt-3 flex justify-between text-xl font-bold text-gray-900">
+                <div className="border-t border-gray-200 pt-3 flex justify-between text-base font-bold text-gray-900">
                   <span>Total</span>
                   <span>${(parseFloat(orderData.totalPrice) * 1.1).toFixed(2)}</span>
                 </div>
               </div>
 
-              <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <p className="text-xs text-blue-800">
-                  <strong>🔒 Secure Checkout:</strong> Your payment information is encrypted and secure.
-                </p>
+              <div className="mt-4 bg-blue-50 rounded-lg p-3 border border-blue-200">
+                <p className="text-[11px] text-blue-800"><strong>🔒 Secure:</strong> Payment info is encrypted.</p>
               </div>
-            </div>
+            </Card>
           </div>
         </div>
       </div>
