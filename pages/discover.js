@@ -125,7 +125,6 @@ export default function Discover() {
         <div className="max-w-[1600px] mx-auto px-8 py-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-3xl font-bold text-gray-900">Trending Now</h2>
-            <span className="text-2xl">🔥</span>
           </div>
           <div className="relative group px-16">
             <button
