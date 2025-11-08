@@ -157,10 +157,21 @@ export default function Discover() {
               <Link
                 key={video.id}
                 href={`/?video=${video.id}`}
-                className="group flex-shrink-0 w-[500px]"
+                className="group flex-shrink-0"
               >
-                <div className="relative w-full h-[280px] rounded-2xl overflow-hidden bg-gray-900 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                  <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300" />
+                <div className="relative w-[315px] h-[560px] rounded-2xl overflow-hidden bg-gray-900 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                  {video.thumbnail && video.thumbnail.endsWith('.mp4') ? (
+                    <video 
+                      src={video.thumbnail} 
+                      className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-all duration-300" 
+                      muted 
+                      loop 
+                      autoPlay 
+                      playsInline 
+                    />
+                  ) : (
+                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-all duration-300" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg">
