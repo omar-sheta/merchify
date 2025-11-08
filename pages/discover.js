@@ -387,12 +387,12 @@ export default function Discover() {
 														className="relative w-16 h-16 rounded-full object-cover shadow-xl ring-2 ring-accent-orange/50"
 													/>
 												</div>
-												<div className="flex-1">
-													<div className="text-xl font-bold text-text-primary mb-0.5 relative inline-block">
-														<span className="relative z-10">{creator.name}</span>
-														<div className="absolute -inset-1 bg-accent-orange/20 blur-sm rounded-lg -z-0"></div>
+												<div className="flex-1 relative">
+													<div className="absolute -left-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-accent-orange/20 rounded-full -z-10"></div>
+													<div className="text-xl font-bold text-white mb-0.5 relative z-10">
+														{creator.name}
 													</div>
-													<div className="text-sm text-text-secondary">
+													<div className="text-sm text-white/90 relative z-10">
 														{creator.bio}
 													</div>
 												</div>
