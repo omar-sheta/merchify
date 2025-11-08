@@ -10,6 +10,7 @@ export default function Customize() {
   const [selectedColor, setSelectedColor] = useState('white')
   const [selectedSize, setSelectedSize] = useState('M')
   const [quantity, setQuantity] = useState(1)
+  const [prompt, setPrompt] = useState('')
 
   useEffect(() => {
     // Load captured frame from sessionStorage
@@ -52,7 +53,8 @@ export default function Customize() {
         color: colors.find(c => c.id === selectedColor),
         size: selectedSize,
         quantity,
-        totalPrice
+        totalPrice,
+        prompt
       }
       sessionStorage.setItem('orderData', JSON.stringify(orderData))
       router.push('/checkout')
@@ -201,6 +203,19 @@ export default function Customize() {
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* Prompt for designer / AI */}
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Add a prompt for Nano Banana</h3>
+              <p className="text-sm text-gray-600 mb-4">Add instructions or creative direction for the design. This will be sent to Nano Banana (designer) and used for AI mockup generation at checkout.</p>
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="e.g. Make the colors pop, add a retro grain, center the face and include bold text 'LOL'"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors min-h-[120px]"
+              />
+              <p className="text-xs text-gray-500 mt-2">Tip: Keep prompts concise (1-2 sentences) for best results.</p>
             </div>
 
             {/* Price Summary */}

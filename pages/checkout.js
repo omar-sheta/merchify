@@ -276,6 +276,12 @@ export default function Checkout() {
                   alt="Your design" 
                   className="w-full rounded-lg shadow-md border border-gray-200 mb-4"
                 />
+                {orderData.prompt && (
+                  <div className="mb-3 p-3 bg-gray-50 rounded-md border border-gray-100">
+                    <div className="text-sm text-gray-700 font-medium mb-1">Designer / AI Prompt</div>
+                    <div className="text-sm text-gray-600 whitespace-pre-wrap">{orderData.prompt}</div>
+                  </div>
+                )}
                 <div className="text-lg font-semibold text-gray-900 mb-1">
                   {orderData.product.icon} {orderData.product.name}
                 </div>
