@@ -181,16 +181,53 @@ export default async function handler(req, res) {
       finalPrompt += `\n\nATTN: You have been given two inline images. The FIRST is the design to print. The SECOND is a ${tplName} image. Composite the FIRST image onto the SECOND image as a realistic print on the product (follow fabric folds, curvature, shadows, and seams as applicable). Do NOT output a separated artwork — output a finished product photo. Remove any hard rectangular borders; blend edges naturally.`
     }
 
+    // Choose an aspect ratio appropriate for the product/template so the model can output a compatible image
+    const aspectMap = {
+      hoodie: '1:1',       // square works fine for most apparel mockups
+      't-shirt': '1:1',
+      poster: '3:4',       // portrait poster
+      mug: '4:3',          // slightly rectangular to allow wrap
+    }
+    const aspectRatio = aspectMap[productType] || '1:1'
+
     let result;
     if (provider === 'gemini') {
-      result = await generateImageFromPrompt(finalPrompt, images)
+      // Primary attempt with full prompt and chosen aspect
+      result = await generateImageFromPrompt(finalPrompt, images, { aspectRatio })
+
+      // If Gemini returned no image, retry with a much shorter explicit prompt and alternate aspect ratios
+      const needRetry = !result?.success && result?.error && /no image/i.test(String(result.error))
+      if (needRetry || !result?.success) {
+        console.warn('[Merch API] Gemini returned no image, retrying with simplified prompt/aspect...')
+
+        const simplifiedPrompt = `Composite the FIRST inline image (design) onto the SECOND inline image (product template) as a photorealistic finished product photo. Center the design on the product and follow folds, curvature, and shadows. No watermarks, no text.`
+
+        // Try a small set of fallback aspect ratios (poster may need 2:3 or 3:4 etc.)
+        const fallbackAspects = [aspectRatio]
+        if (productType === 'poster') fallbackAspects.push('2:3', '4:5')
+        if (productType === 'mug') fallbackAspects.push('4:3', '3:2')
+        if (productType === 't-shirt' || productType === 'hoodie') fallbackAspects.push('1:1')
+
+        for (const asp of fallbackAspects) {
+          try {
+            const attempt = await generateImageFromPrompt(simplifiedPrompt, images, { aspectRatio: asp })
+            if (attempt?.success) {
+              result = attempt
+              break
+            }
+          } catch (e) {
+            console.warn('[Merch API] retry attempt failed:', e?.message)
+          }
+        }
+      }
     } else {
+      // For non-gemini providers, pass size through as before (model/size may control output dims)
       result = await generateImageWithOpenAI(
         finalPrompt,
         images,
         model,
         size,
-        { quality: 'hd', style: 'vivid' }
+        { quality: 'hd', style: 'vivid', aspectRatio }
       )
     }
 
