@@ -3,6 +3,7 @@ node_modules/
 .next/
 .env.local
 .DS_Store
+.env
 
 # Local logs
 npm-debug.log*
