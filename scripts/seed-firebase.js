@@ -75,7 +75,7 @@ const sampleProfiles = [
 const sampleVideos = [
   {
     id: "creator_1-1",
-    title: "Epic Hoodie Drop",
+    title: "Eric Does it Again - Stand Up at NYC",
     description: "Check out this amazing hoodie design and how it was created!",
     videoUrl: "/feed/creator_1/1.mp4",
     thumbnailUrl: "/feed/creator_1/1_thumb.jpg",
@@ -104,11 +104,26 @@ const sampleVideos = [
     category: "merch"
   },
   {
+    id: "creator_3-war",
+    title: "War Refugee",
+    description: "Powerful comedy performance by Nat",
+    videoUrl: "/feed/creator_3/War_Refugee_natyourcolor.mp4",
+    thumbnailUrl: "/feed/creator_3/War_Refugee_natyourcolor_thumb.jpg",
+    creatorId: "profile1",
+    creatorName: "Max Amini",
+    creatorAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuBiOoA0CPet1puGU2CsaQeYXR38ZqobMsKlndkHzabEtsqOJH5G80g3PAr6PCsTc29KMd-NLsnmdv0kSux-urpd4v7yu3zANpLF7E_zx53NyqdcvYWmaKw23EmZJx53-1uyxMckb_lX4OzCt2ntPuDO7tSE-X4Af3BxLFWmWXWAq7ECJ29zLEOExNUGoAf0FRIG3utY9-oqdWMFOkzt_usKzCqJ0Tv2jFwbOqjItheqTTbjDRurOWdC2m-mPn0GSRKi6sOp9RKvPWI",
+    duration: 28,
+    views: 18900,
+    likes: 1650,
+    tags: ["standup", "comedy", "powerful"],
+    category: "standup"
+  },
+  {
     id: "creator_3-zohran",
     title: "Zohran Wins | Nimesh Patel",
     description: "Hilarious stand-up comedy routine by Nimesh Patel",
-    videoUrl: "/feed/creator_3/Zohran Wins _ Nimesh Patel.mp4",
-    thumbnailUrl: "/feed/creator_3/Zohran Wins _ Nimesh Patel_thumb.jpg",
+    videoUrl: "/feed/creator_3/Zohran_Wins_Nimesh_Patel.mp4",
+    thumbnailUrl: "/feed/creator_3/Zohran_Wins_Nimesh_Patel_thumb.jpg",
     creatorId: "profile2",
     creatorName: "Comedy Central",
     creatorAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop",
@@ -119,11 +134,26 @@ const sampleVideos = [
     category: "standup"
   },
   {
+    id: "creator_4-ptsd",
+    title: "PTSD Acronyms | Mary Gallagher",
+    description: "Insightful and funny take on PTSD by Mary Gallagher",
+    videoUrl: "/feed/creator_4/PTSD_Acronyms_Mary_Gallagher.mp4",
+    thumbnailUrl: "/feed/creator_4/PTSD_Acronyms_Mary_Gallagher_thumb.jpg",
+    creatorId: "profile3",
+    creatorName: "Sarah Johnson",
+    creatorAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
+    duration: 14,
+    views: 31200,
+    likes: 2800,
+    tags: ["comedy", "standup", "mental health"],
+    category: "comedy"
+  },
+  {
     id: "creator_4-racism",
     title: "Racism is NEVER Wrong",
     description: "A provocative stand-up comedy bit that challenges perspectives",
-    videoUrl: "/feed/creator_4/Racism is NEVER Wrong.mp4",
-    thumbnailUrl: "/feed/creator_4/Racism is NEVER Wrong_thumb.jpg",
+    videoUrl: "/feed/creator_4/Racism_is_NEVER_Wrong.mp4",
+    thumbnailUrl: "/feed/creator_4/Racism_is_NEVER_Wrong_thumb.jpg",
     creatorId: "profile3",
     creatorName: "Sarah Johnson",
     creatorAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",

@@ -314,7 +314,7 @@ export default function Discover() {
 					<div className="w-full mb-12 pt-10">
 						<div className="max-w-[1600px] mx-auto px-8">
 							<div className="flex items-center justify-between mb-6">
-								<h2 className="text-3xl font-bold text-text-primary">
+								<h2 className="text-3xl font-bold text-text-primary text-center justify-center w-full">
 									Trending Now
 								</h2>
 							</div>
@@ -448,7 +448,7 @@ export default function Discover() {
 									{creators.map((creator) => (
 										<Card
 											key={creator.id}
-											className="w-[400px] flex-shrink-0 p-6 flex flex-col gap-4 snap-center"
+											className="w-[400px] flex-shrink-0 p-6 flex flex-col gap-4 snap-center bg-[#F5F5F0]"
 										>
 											<div className="flex items-center gap-4">
 												<div className="relative">
@@ -461,19 +461,19 @@ export default function Discover() {
 												</div>
 												<div className="flex-1 relative">
 													<div className="relative inline-block">
-														<div className="absolute inset-0 bg-accent-orange/15 rounded-full transform scale-110"></div>
-														<div className="text-xl font-bold text-white mb-0.5 relative z-10">
+														<div className="absolute inset-0 rounded-full transform scale-110"></div>
+														<div className="text-xl font-bold text-gray-900 mb-0.5 relative z-10">
 															{creator.name}
 														</div>
 													</div>
-													<div className="text-sm text-white/90 relative z-10 mt-1">
+													<div className="text-sm text-gray-700 relative z-10 mt-1">
 														{creator.bio}
 													</div>
 												</div>
 											</div>
 											{/* Video carousel */}
 											<div className="mt-2">
-												<div className="text-sm font-semibold text-text-secondary mb-3">
+												<div className="text-sm font-semibold text-gray-800 mb-3">
 													Videos
 												</div>
 												<div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -513,7 +513,7 @@ export default function Discover() {
 											</div>
 											{/* Merch carousel */}
 											<div className="mt-4">
-												<div className="text-sm font-semibold text-text-secondary mb-3">
+												<div className="text-sm font-semibold text-gray-800 mb-3">
 													Popular Merch
 												</div>
 												<div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
