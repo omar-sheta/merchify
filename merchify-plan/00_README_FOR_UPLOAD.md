@@ -1,0 +1,1 @@
+Use this small helper file before uploading to GitHub. It lists files created and their purpose so team members know what to fill in next.
