@@ -6,6 +6,8 @@ import { FALLBACK_CAPTURE_IMAGE } from '../lib/placeholders'
 export default function Home() {
   const [capturedFrame, setCapturedFrame] = useState(null)
   const videoRef = useRef(null)
+  const [previewFrame, setPreviewFrame] = useState(null)
+  const lastPreviewRef = useRef(0)
 
   // Video feed will be fetched from the server API which lists files in /public/feed
   const [videos, setVideos] = useState([])
@@ -30,6 +32,25 @@ export default function Home() {
     }
     loadFeed()
   }, [])
+
+  // Attach video event listeners to update the live preview
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    const onTime = () => updatePreview()
+    const onPause = () => updatePreview()
+    const onLoaded = () => updatePreview()
+    el.addEventListener('timeupdate', onTime)
+    el.addEventListener('pause', onPause)
+    el.addEventListener('loadeddata', onLoaded)
+    // initial preview for poster
+    updatePreview()
+    return () => {
+      el.removeEventListener('timeupdate', onTime)
+      el.removeEventListener('pause', onPause)
+      el.removeEventListener('loadeddata', onLoaded)
+    }
+  }, [activeVideo])
 
   // Create thumbnails by drawing a frame from each video into a canvas.
   async function generateThumbnails(items) {
@@ -136,6 +157,31 @@ export default function Home() {
     }
   }
 
+  // Update a small live preview from the currently playing/paused video.
+  function updatePreview() {
+    const now = Date.now()
+    // throttle preview updates to ~250ms
+    if (now - lastPreviewRef.current < 250) return
+    lastPreviewRef.current = now
+    const videoEl = videoRef.current
+    if (!videoEl || !videoEl.videoWidth || !videoEl.videoHeight) {
+      setPreviewFrame(activeVideo?.poster || FALLBACK_CAPTURE_IMAGE)
+      return
+    }
+    try {
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.min(640, videoEl.videoWidth)
+      canvas.height = Math.min(360, Math.round((canvas.width * videoEl.videoHeight) / videoEl.videoWidth))
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height)
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.6)
+      setPreviewFrame(dataUrl)
+    } catch (err) {
+      // cross-origin drawImage may fail
+      setPreviewFrame(activeVideo?.poster || FALLBACK_CAPTURE_IMAGE)
+    }
+  }
+
   return (
     <div className="bg-gradient-to-b from-slate-50 via-white to-blue-50 min-h-screen">
       <Head>
@@ -196,19 +242,38 @@ export default function Home() {
             )}
 
             <div className="mt-4">
-              <h4 className="text-sm text-gray-400 mb-2">Video Feed</h4>
-              <div className="flex gap-3 overflow-x-auto py-2">
-                {videos.map((v) => (
-                  <button
-                    key={v.id}
-                    onClick={() => setActiveVideo(v)}
-                    className={`flex-shrink-0 w-40 h-24 rounded-lg overflow-hidden border-2 ${activeVideo?.id === v.id ? 'border-blue-500' : 'border-gray-200'}`}
-                    title={v.title}
-                  >
-                    <img src={v.thumb || v.poster} alt={v.title} className="w-full h-full object-cover bg-black" />
-                  </button>
-                ))}
+              {/* preview area: shows a small, ready preview taken from the video itself */}
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <h4 className="text-sm text-gray-400 mb-2">Live Preview</h4>
+                  <div className="w-full bg-black rounded-lg overflow-hidden border border-gray-800">
+                    <img src={previewFrame || activeVideo?.poster || FALLBACK_CAPTURE_IMAGE} alt="live preview" className="w-full h-44 object-cover" />
+                  </div>
+                </div>
+                <div className="w-48">
+                  <h4 className="text-sm text-gray-400 mb-2">Current Selection</h4>
+                  <div className="rounded-lg overflow-hidden border border-gray-200">
+                    <img src={activeVideo?.thumb || activeVideo?.poster || FALLBACK_CAPTURE_IMAGE} alt={activeVideo?.title || 'selected'} className="w-full h-28 object-cover" />
+                  </div>
+                </div>
               </div>
+            </div>
+          </div>
+
+          {/* Move the full video list below the player so users can choose another video */}
+          <div className="mb-6">
+            <h4 className="text-sm text-gray-400 mb-2">Choose a video</h4>
+            <div className="flex gap-3 overflow-x-auto py-2">
+              {videos.map((v) => (
+                <button
+                  key={v.id}
+                  onClick={() => setActiveVideo(v)}
+                  className={`flex-shrink-0 w-40 h-24 rounded-lg overflow-hidden border-2 ${activeVideo?.id === v.id ? 'border-blue-500' : 'border-gray-200'}`}
+                  title={v.title}
+                >
+                  <img src={v.thumb || v.poster} alt={v.title} className="w-full h-full object-cover bg-black" />
+                </button>
+              ))}
             </div>
           </div>
 
