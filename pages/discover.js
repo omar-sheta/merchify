@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Discover() {
   const [trendingVideos, setTrendingVideos] = useState([]);
@@ -36,6 +37,11 @@ export default function Discover() {
             title: video.title,
             views: formatViews(video.views || 0)
           })) || [];
+        
+        console.log('Trending videos loaded:', trending.length, 'videos');
+        if (trending.length > 0) {
+          console.log('First trending video ID:', trending[0].id);
+        }
         
         setTrendingVideos(trending);
         
@@ -148,7 +154,7 @@ export default function Discover() {
             </button>
           <div ref={trendingScrollRef} className="flex gap-6 overflow-x-auto pb-4 -mx-2 px-2 scrollbar-hide">
             {trendingVideos.map((video) => (
-              <a
+              <Link
                 key={video.id}
                 href={`/?video=${video.id}`}
                 className="group flex-shrink-0 w-[500px]"
@@ -169,7 +175,7 @@ export default function Discover() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
           </div>
@@ -200,7 +206,7 @@ export default function Discover() {
                 <div className="text-sm font-semibold text-gray-700 mb-3">Videos</div>
                 <div className="flex gap-3 overflow-x-auto pb-2">
                   {creator.videos.map((video) => (
-                    <a
+                    <Link
                       key={video.id}
                       href={`/?video=${video.id}`}
                       className="group block min-w-[160px]"
@@ -215,7 +221,7 @@ export default function Discover() {
                         </div>
                       </div>
                       <div className="font-medium text-sm text-gray-900 group-hover:text-blue-600 transition-colors">{video.title}</div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>

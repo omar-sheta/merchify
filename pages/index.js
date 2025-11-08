@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useState, useRef, useEffect } from 'react'
 import { FALLBACK_CAPTURE_IMAGE } from '../lib/placeholders'
 import Card from '../components/ui/Card'
@@ -7,6 +8,7 @@ import Button from '../components/ui/Button'
 import SectionHeading from '../components/ui/SectionHeading'
 
 export default function Home() {
+  const router = useRouter();
   const [capturedFrame, setCapturedFrame] = useState(null)
   const videoRef = useRef(null)
   const [previewFrame, setPreviewFrame] = useState(null)
@@ -17,13 +19,36 @@ export default function Home() {
   const [activeVideo, setActiveVideo] = useState(null)
 
   useEffect(() => {
+    // Wait for router to be ready before processing query params
+    if (!router.isReady) return;
+    
     async function loadFeed() {
       try {
         const res = await fetch('/api/feed');
         const json = await res.json();
         if (json.items && json.items.length) {
           setVideos(json.items);
-          setActiveVideo(json.items[0]); // Ensure the first video is set as active
+          
+          // Check if there's a video ID in the URL query
+          const { video: videoId } = router.query;
+          
+          if (videoId) {
+            // Find and set the video from the query parameter
+            const selectedVideo = json.items.find(v => v.id === videoId);
+            if (selectedVideo) {
+              setActiveVideo(selectedVideo);
+              console.log('Selected video from URL:', videoId, selectedVideo.title);
+            } else {
+              // Fallback to first video if ID not found
+              console.log('Video ID not found:', videoId, 'using first video');
+              setActiveVideo(json.items[0]);
+            }
+          } else {
+            // No query parameter, use first video
+            console.log('No video query param, using first video');
+            setActiveVideo(json.items[0]);
+          }
+          
           // generate client-side thumbnails from the video files (same-origin)
           if (typeof window !== 'undefined') {
             generateThumbnails(json.items)
@@ -34,7 +59,7 @@ export default function Home() {
       }
     }
     loadFeed();
-  }, [])
+  }, [router.isReady, router.query.video])
 
   // Attach video event listeners to update the live preview
   useEffect(() => {
