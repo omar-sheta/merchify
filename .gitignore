@@ -9,3 +9,4 @@ node_modules/
 npm-debug.log*
 firebase-admin-key.json
 firebase-data.json
+package-lock.json
