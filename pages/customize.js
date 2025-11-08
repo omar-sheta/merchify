@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FALLBACK_CAPTURE_IMAGE } from '../lib/placeholders'
+import { getDesignById } from '../lib/firestore'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import SectionHeading from '../components/ui/SectionHeading'
@@ -19,10 +20,62 @@ export default function Customize() {
   const [generatedMockup, setGeneratedMockup] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generationError, setGenerationError] = useState(null)
+  const [loadingDesign, setLoadingDesign] = useState(false)
+
+  // Load design from URL parameter if present
+  useEffect(() => {
+    const loadDesignFromUrl = async () => {
+      if (!router.isReady) return;
+      
+      const designId = router.query.design;
+      if (designId) {
+        setLoadingDesign(true);
+        try {
+          const design = await getDesignById(designId);
+          
+          // Load the design data
+          setCapturedFrame(design.capturedFrame || FALLBACK_CAPTURE_IMAGE);
+          setGeneratedMockup(design.mockupImage);
+          setPrompt(design.prompt || '');
+          
+          // Set product details
+          if (design.product?.id) {
+            setSelectedProduct(design.product.id);
+          }
+          if (design.color?.id) {
+            setSelectedColor(design.color.id);
+          }
+          if (design.size) {
+            setSelectedSize(design.size);
+          }
+          if (design.quantity) {
+            setQuantity(design.quantity);
+          }
+          
+          // Set video data if available
+          if (design.videoId) {
+            setVideoData({
+              id: design.videoId,
+              src: design.videoSrc
+            });
+          }
+          
+          console.log('Loaded design:', designId);
+        } catch (error) {
+          console.error('Error loading design:', error);
+          // Fall back to session storage if design loading fails
+        } finally {
+          setLoadingDesign(false);
+        }
+      }
+    };
+
+    loadDesignFromUrl();
+  }, [router.isReady, router.query.design]);
 
   useEffect(() => {
-    // Load captured frame and video data from sessionStorage
-    if (typeof window !== 'undefined') {
+    // Load captured frame and video data from sessionStorage (if not loading from URL)
+    if (typeof window !== 'undefined' && !router.query.design) {
       const frame = sessionStorage.getItem('capturedFrame')
       const videoInfo = sessionStorage.getItem('videoData')
       

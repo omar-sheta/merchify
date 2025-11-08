@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { auth } from '../lib/firebase';
+import { likeDesign, unlikeDesign, getUserLikes } from '../lib/firestore';
 
 export default function Discover() {
   const [trendingVideos, setTrendingVideos] = useState([]);
@@ -7,7 +10,10 @@ export default function Discover() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [userLikes, setUserLikes] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const trendingScrollRef = useRef(null);
+  const router = useRouter();
 
   const scroll = (ref, direction) => {
     if (ref.current) {
@@ -118,6 +124,90 @@ export default function Discover() {
 
     fetchData();
   }, []);
+
+  // Listen for auth state changes and fetch user likes
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      setCurrentUser(user);
+      if (user) {
+        try {
+          const likes = await getUserLikes(user.uid);
+          setUserLikes(likes);
+        } catch (error) {
+          console.error('Error fetching user likes:', error);
+        }
+      } else {
+        setUserLikes([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Handle like/unlike
+  const handleLikeToggle = async (designId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    let user = currentUser;
+    if (!user) {
+      // Sign in anonymously for testing
+      const { signInAnonymously } = await import('firebase/auth');
+      try {
+        const result = await signInAnonymously(auth);
+        user = result.user;
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('Error signing in anonymously:', error);
+        alert('Please sign in to like designs');
+        return;
+      }
+    }
+
+    const isLiked = userLikes.includes(designId);
+
+    try {
+      if (isLiked) {
+        await unlikeDesign(user.uid, designId);
+        setUserLikes(userLikes.filter(id => id !== designId));
+        
+        // Update the like count in UI
+        setCreators(prevCreators => 
+          prevCreators.map(creator => ({
+            ...creator,
+            merch: creator.merch.map(item => 
+              item.id === designId 
+                ? { ...item, likes: Math.max(0, item.likes - 1) }
+                : item
+            )
+          }))
+        );
+      } else {
+        await likeDesign(user.uid, designId);
+        setUserLikes([...userLikes, designId]);
+        
+        // Update the like count in UI
+        setCreators(prevCreators => 
+          prevCreators.map(creator => ({
+            ...creator,
+            merch: creator.merch.map(item => 
+              item.id === designId 
+                ? { ...item, likes: item.likes + 1 }
+                : item
+            )
+          }))
+        );
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      alert('Failed to update like. Please try again.');
+    }
+  };
+
+  // Handle merch click - navigate to customize page with design
+  const handleMerchClick = (designId) => {
+    router.push(`/customize?design=${designId}`);
+  };
 
   // Helper function to format view counts
   const formatViews = (views) => {
@@ -274,22 +364,49 @@ export default function Discover() {
               <div className="mt-4">
                 <div className="text-sm font-semibold text-gray-700 mb-3">Popular Merch</div>
                 <div className="flex gap-3 overflow-x-auto pb-2">
-                  {creator.merch.map((item) => (
-                    <div key={item.id} className="min-w-[140px] bg-gray-50 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-3 flex flex-col items-center">
-                      <img src={item.image} alt={item.title} className="w-24 h-24 object-cover rounded-lg mb-2" />
-                      <div className="font-semibold text-sm mb-1.5 text-gray-900 text-center">{item.title}</div>
-                      <div className="flex items-center gap-2.5 mt-1">
-                        <div className="flex items-center gap-1 text-red-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" className="w-4 h-4"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" /></svg>
-                          <span className="font-medium text-xs">{item.likes}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-gray-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                          <span className="font-medium text-xs">{item.comments}</span>
+                  {creator.merch.map((item) => {
+                    const isLiked = userLikes.includes(item.id);
+                    return (
+                      <div 
+                        key={item.id} 
+                        className="min-w-[140px] bg-gray-50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-3 flex flex-col items-center cursor-pointer"
+                        onClick={() => handleMerchClick(item.id)}
+                      >
+                        <img src={item.image} alt={item.title} className="w-24 h-24 object-cover rounded-lg mb-2" />
+                        <div className="font-semibold text-sm mb-1.5 text-gray-900 text-center">{item.title}</div>
+                        <div className="flex items-center gap-2.5 mt-1">
+                          <button
+                            onClick={(e) => handleLikeToggle(item.id, e)}
+                            className={`flex items-center gap-1 transition-all duration-200 ${
+                              isLiked 
+                                ? 'text-red-500' 
+                                : 'text-gray-400 hover:text-red-500'
+                            }`}
+                          >
+                            <svg 
+                              xmlns="http://www.w3.org/2000/svg" 
+                              fill={isLiked ? "currentColor" : "none"}
+                              viewBox="0 0 24 24" 
+                              stroke="currentColor"
+                              className="w-4 h-4"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth="2" 
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
+                              />
+                            </svg>
+                            <span className="font-medium text-xs">{item.likes}</span>
+                          </button>
+                          <div className="flex items-center gap-1 text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                            <span className="font-medium text-xs">{item.comments}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
