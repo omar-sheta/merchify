@@ -81,7 +81,7 @@ export default function Discover() {
               id: design.id,
               image: design.mockupImage || design.capturedFrame,
               title: design.product?.name || 'Custom Design',
-              likes: 0, // Can be added later
+              likes: design.likeCount || 0,
               comments: 0, // Can be added later
               product: design.product,
               price: design.totalPrice
