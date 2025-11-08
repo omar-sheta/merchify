@@ -26,6 +26,10 @@ export default function Discover() {
         const videosRes = await fetch('/api/feed');
         const videosData = await videosRes.json();
         
+        // Fetch designs
+        const designsRes = await fetch('/api/designs');
+        const designsData = await designsRes.json();
+        
         // Format trending videos (top 6 by views)
         const trending = videosData.items
           ?.sort((a, b) => (b.views || 0) - (a.views || 0))
@@ -64,15 +68,45 @@ export default function Discover() {
           });
         });
         
-        // Format creators with their videos
-        const creatorsWithVideos = profilesData.profiles?.map(profile => ({
-          id: profile.id,
-          name: profile.displayName,
-          avatar: profile.avatar,
-          bio: profile.bio,
-          videos: creatorMap[profile.id] || [],
-          merch: [] // Merch functionality can be added later
-        })) || [];
+        // Group designs by video ID
+        const designsByVideo = {};
+        designsData.designs?.forEach(design => {
+          if (design.videoId) {
+            if (!designsByVideo[design.videoId]) {
+              designsByVideo[design.videoId] = [];
+            }
+            designsByVideo[design.videoId].push({
+              id: design.id,
+              image: design.mockupImage || design.capturedFrame,
+              title: design.product?.name || 'Custom Design',
+              likes: 0, // Can be added later
+              comments: 0, // Can be added later
+              product: design.product,
+              price: design.totalPrice
+            });
+          }
+        });
+        
+        // Format creators with their videos and designs
+        const creatorsWithVideos = profilesData.profiles?.map(profile => {
+          const creatorVideos = creatorMap[profile.id] || [];
+          
+          // Collect all designs from this creator's videos
+          const creatorDesigns = [];
+          creatorVideos.forEach(video => {
+            const videoDesigns = designsByVideo[video.id] || [];
+            creatorDesigns.push(...videoDesigns);
+          });
+          
+          return {
+            id: profile.id,
+            name: profile.displayName,
+            avatar: profile.avatar,
+            bio: profile.bio,
+            videos: creatorVideos,
+            merch: creatorDesigns.slice(0, 6) 
+          };
+        }) || [];
         
         setCreators(creatorsWithVideos);
       } catch (error) {
