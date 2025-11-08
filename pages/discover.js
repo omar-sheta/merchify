@@ -372,7 +372,7 @@ export default function Discover() {
 									No creators available yet
 								</div>
 							) : (
-								<div className="flex gap-8 overflow-x-scroll pb-4 px-4 justify-start items-start snap-x snap-mandatory">
+								<div className="flex gap-8 overflow-x-scroll pb-4 px-4 justify-center items-start snap-x snap-mandatory">
 									{creators.map((creator) => (
 										<Card
 											key={creator.id}
