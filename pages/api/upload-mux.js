@@ -1,30 +1,17 @@
-// API endpoint for uploading video to Mux
-import { getContainer } from '../../backend/infrastructure/di/container'
+// API stub for uploading video to Mux and returning a thumbnail URL.
+// Replace with real multipart parsing and mux-node usage.
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+
+  // TODO: Parse multipart form-data and upload to Mux or your storage.
+  // For Sprint 1, this stub returns a mock thumbnail URL and a mock asset id.
+
+  const mock = {
+    assetId: 'mock-asset-123',
+    playbackId: 'mock-playback-456',
+    thumbnail: 'https://via.placeholder.com/512x288.png?text=Mock+Thumbnail'
   }
 
-  try {
-    const container = getContainer()
-    const uploadVideoUseCase = container.getUseCase('uploadVideo')
-
-    // TODO: Parse multipart form-data properly
-    // For now, working with mock file data
-    const file = req.body?.file || null
-
-    const videoAsset = await uploadVideoUseCase.execute(file)
-
-    return res.status(200).json({
-      assetId: videoAsset.assetId,
-      playbackId: videoAsset.playbackId,
-      thumbnail: videoAsset.thumbnail
-    })
-  } catch (error) {
-    console.error('Upload error:', error)
-    return res.status(500).json({ 
-      error: error.message || 'Upload failed' 
-    })
-  }
+  return res.status(200).json(mock)
 }

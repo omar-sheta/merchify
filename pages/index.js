@@ -1,17 +1,138 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState, useRef } from 'react'
-import StorageService from '../frontend/services/StorageService'
+import { useState, useRef, useEffect } from 'react'
 
 export default function Home() {
   const [capturedFrame, setCapturedFrame] = useState(null)
   const videoRef = useRef(null)
 
-  // For demo: use static image as captured frame
+  // Video feed will be fetched from the server API which lists files in /public/feed
+  const [videos, setVideos] = useState([])
+  const [activeVideo, setActiveVideo] = useState(null)
+
+  useEffect(() => {
+    async function loadFeed() {
+      try {
+        const res = await fetch('/api/feed')
+        const json = await res.json()
+        if (json.items && json.items.length) {
+          setVideos(json.items)
+          setActiveVideo(json.items[0])
+          // generate client-side thumbnails from the video files (same-origin)
+          if (typeof window !== 'undefined') {
+            generateThumbnails(json.items)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load feed', err)
+      }
+    }
+    loadFeed()
+  }, [])
+
+  // Create thumbnails by drawing a frame from each video into a canvas.
+  async function generateThumbnails(items) {
+    // run sequentially to avoid heavy parallel loads
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      try {
+        const dataUrl = await createThumbnail(item.src)
+        if (dataUrl) {
+          // update state immutably
+          setVideos((prev) => prev.map((v) => (v.id === item.id ? { ...v, thumb: dataUrl } : v)))
+        }
+      } catch (e) {
+        // ignore thumbnail failures
+        console.warn('thumb gen failed for', item.src, e)
+      }
+    }
+  }
+
+  function createThumbnail(src) {
+    return new Promise((resolve) => {
+      try {
+        const video = document.createElement('video')
+        video.src = src
+        video.crossOrigin = 'anonymous'
+        video.muted = true
+        video.playsInline = true
+        // try to load small amount
+        const cleanup = () => {
+          video.src = ''
+          video.load()
+        }
+
+        const makeCanvas = () => {
+          try {
+            const canvas = document.createElement('canvas')
+            canvas.width = video.videoWidth || 320
+            canvas.height = video.videoHeight || 180
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.75)
+            cleanup()
+            resolve(dataUrl)
+          } catch (err) {
+            cleanup()
+            resolve(null)
+          }
+        }
+
+        const onLoaded = () => {
+          // seek to 0.5s or 1s to get a good frame
+          const t = Math.min(1, (video.duration || 1) / 2)
+          const onSeeked = () => {
+            makeCanvas()
+          }
+          video.removeEventListener('loadeddata', onLoaded)
+          video.addEventListener('seeked', onSeeked, { once: true })
+          try {
+            video.currentTime = t
+          } catch (e) {
+            // some browsers restrict seeking before metadata; fallback
+            setTimeout(makeCanvas, 500)
+          }
+        }
+
+        video.addEventListener('loadeddata', onLoaded)
+        video.addEventListener('error', () => resolve(null))
+        // start loading
+        video.load()
+        // safety timeout
+        setTimeout(() => resolve(null), 3000)
+      } catch (err) {
+        resolve(null)
+      }
+    })
+  }
+
   function captureFrame() {
+    // If there's an active HTMLVideoElement, capture from it. Otherwise fall back to static image.
+    const videoEl = videoRef.current
+    if (videoEl && videoEl.videoWidth && videoEl.videoHeight) {
+      const canvas = document.createElement('canvas')
+      canvas.width = videoEl.videoWidth
+      canvas.height = videoEl.videoHeight
+      const ctx = canvas.getContext('2d')
+      try {
+        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height)
+        const dataUrl = canvas.toDataURL('image/png')
+        setCapturedFrame(dataUrl)
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('capturedFrame', dataUrl)
+        }
+        return
+      } catch (err) {
+        // drawing may fail if the video is cross-origin; fall back to static image
+        console.warn('capture failed, falling back to static image', err)
+      }
+    }
+
     const imageUrl = '/images/rinku_meme.jpeg'
     setCapturedFrame(imageUrl)
-    StorageService.saveCapturedFrame(imageUrl)
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('capturedFrame', imageUrl)
+    }
   }
 
   return (
@@ -53,15 +174,41 @@ export default function Home() {
           </div>
 
           <div className="relative bg-black rounded-xl overflow-hidden shadow-lg mb-6">
-            <div className="flex items-center justify-center min-h-[300px] bg-black rounded-xl overflow-auto">
-              <img
-                src="/images/rinku_meme.jpeg"
-                alt="Captured frame preview"
-                className="rounded-xl shadow-lg border border-gray-200 bg-black"
-                style={{ display: 'block', maxWidth: '100%', height: 'auto' }}
+            {/* Player: show active video if available, otherwise the static image */}
+            {activeVideo && activeVideo.src ? (
+              <video
+                ref={videoRef}
+                controls
+                className="w-full max-h-[500px] bg-black rounded-xl"
+                src={activeVideo.src}
+                poster={activeVideo.poster}
               />
+            ) : (
+              <div className="flex items-center justify-center min-h-[300px] bg-black rounded-xl overflow-auto">
+                <img
+                  src="/images/rinku_meme.jpeg"
+                  alt="Captured frame preview"
+                  className="rounded-xl shadow-lg border border-gray-200 bg-black"
+                  style={{ display: 'block', maxWidth: '100%', height: 'auto' }}
+                />
+              </div>
+            )}
+
+            <div className="mt-4">
+              <h4 className="text-sm text-gray-400 mb-2">Video Feed</h4>
+              <div className="flex gap-3 overflow-x-auto py-2">
+                {videos.map((v) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setActiveVideo(v)}
+                    className={`flex-shrink-0 w-40 h-24 rounded-lg overflow-hidden border-2 ${activeVideo?.id === v.id ? 'border-blue-500' : 'border-gray-200'}`}
+                    title={v.title}
+                  >
+                    <img src={v.thumb || v.poster} alt={v.title} className="w-full h-full object-cover bg-black" />
+                  </button>
+                ))}
+              </div>
             </div>
-            <span className="block text-center mt-2 text-gray-500 text-sm">Demo: This is the captured frame for merchandise</span>
           </div>
 
           <button

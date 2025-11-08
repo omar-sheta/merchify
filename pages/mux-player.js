@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import Head from 'next/head'
-import MuxPlayer from '../frontend/components/MuxPlayer'
+import MuxPlayer from '../components/MuxPlayer'
 
 export default function MuxPlayerPage() {
   const [playbackId, setPlaybackId] = useState('')
