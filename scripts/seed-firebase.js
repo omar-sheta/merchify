@@ -74,37 +74,40 @@ const sampleProfiles = [
 
 const sampleVideos = [
   {
-    title: "My Wife's Gotta See This",
-    description: "Hilarious story about my wife and a funny moment at the grocery store",
-    videoUrl: "/feed/creator1/video1.mp4",
-    thumbnailUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBl4is-0gUpgamJ9vjybaGOcY0sbYY74wX0eLbQNIF3I6XYfpD2B48l8KkTC-9BLrcU7-Q_ut6iYJfbbm8bYPTnbej5BKE2Wda6uyC7CRocg9LEKomjswrKjtDDiersGa133MDBk7bc2zOZfo-D7TJJCBtO2xwNv9qGxJ_dWGNefHEYlOCgFt6r6-Cu7rb9T82VfaJt1yc_-LOYlsMS5PcSoE4mhGk0I276wMW1LjUR_lZvP1Bahfk8z3iuDvknb4AbXRhan2xo0Cg",
+    id: "creator_1-1",
+    title: "Epic Hoodie Drop",
+    description: "Check out this amazing hoodie design and how it was created!",
+    videoUrl: "/feed/creator_1/1.mp4",
+    thumbnailUrl: "/feed/creator_1/1.mp4",
     creatorId: "profile1",
     creatorName: "Max Amini",
     creatorAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuBiOoA0CPet1puGU2CsaQeYXR38ZqobMsKlndkHzabEtsqOJH5G80g3PAr6PCsTc29KMd-NLsnmdv0kSux-urpd4v7yu3zANpLF7E_zx53NyqdcvYWmaKw23EmZJx53-1uyxMckb_lX4OzCt2ntPuDO7tSE-X4Af3BxLFWmWXWAq7ECJ29zLEOExNUGoAf0FRIG3utY9-oqdWMFOkzt_usKzCqJ0Tv2jFwbOqjItheqTTbjDRurOWdC2m-mPn0GSRKi6sOp9RKvPWI",
     duration: 59,
     views: 12300,
     likes: 1240,
-    tags: ["comedy", "storytelling", "funny"],
-    category: "comedy"
+    tags: ["fashion", "merch", "design"],
+    category: "merch"
   },
   {
-    title: "When Your Mom Calls",
-    description: "Every Persian kid knows this feeling!",
-    videoUrl: "/feed/creator1/video2.mp4",
-    thumbnailUrl: "https://images.unsplash.com/photo-1527224857830-43a7acc85260?w=800&h=600&fit=crop",
+    id: "creator_2-2",
+    title: "Streetwear Collection",
+    description: "My latest streetwear designs - what do you think?",
+    videoUrl: "/feed/creator_2/2.mp4",
+    thumbnailUrl: "/feed/creator_2/2.mp4",
     creatorId: "profile1",
     creatorName: "Max Amini",
     creatorAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuBiOoA0CPet1puGU2CsaQeYXR38ZqobMsKlndkHzabEtsqOJH5G80g3PAr6PCsTc29KMd-NLsnmdv0kSux-urpd4v7yu3zANpLF7E_zx53NyqdcvYWmaKw23EmZJx53-1uyxMckb_lX4OzCt2ntPuDO7tSE-X4Af3BxLFWmWXWAq7ECJ29zLEOExNUGoAf0FRIG3utY9-oqdWMFOkzt_usKzCqJ0Tv2jFwbOqjItheqTTbjDRurOWdC2m-mPn0GSRKi6sOp9RKvPWI",
     duration: 45,
     views: 8500,
     likes: 890,
-    tags: ["comedy", "family", "relatable"],
-    category: "comedy"
+    tags: ["streetwear", "fashion", "design"],
+    category: "merch"
   },
   {
-    title: "Stand-Up: Airport Security",
-    description: "My experience going through airport security. You won't believe what happened!",
-    videoUrl: "/feed/creator2/video1.mp4",
+    id: "creator_3-zohran",
+    title: "Zohran Wins | Nimesh Patel",
+    description: "Hilarious stand-up comedy routine by Nimesh Patel",
+    videoUrl: "/feed/creator_3/Zohran Wins _ Nimesh Patel.mp4",
     thumbnailUrl: "https://images.unsplash.com/photo-1464047736614-af63643285bf?w=800&h=600&fit=crop",
     creatorId: "profile2",
     creatorName: "Comedy Central",
@@ -112,13 +115,14 @@ const sampleVideos = [
     duration: 120,
     views: 45000,
     likes: 3200,
-    tags: ["standup", "comedy", "travel"],
+    tags: ["standup", "comedy", "funny"],
     category: "standup"
   },
   {
-    title: "Dating in Your 30s",
-    description: "Why is dating so complicated? Let me tell you...",
-    videoUrl: "/feed/creator3/video1.mp4",
+    id: "creator_4-racism",
+    title: "Racism is NEVER Wrong",
+    description: "A provocative stand-up comedy bit that challenges perspectives",
+    videoUrl: "/feed/creator_4/Racism is NEVER Wrong.mp4",
     thumbnailUrl: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800&h=600&fit=crop",
     creatorId: "profile3",
     creatorName: "Sarah Johnson",
@@ -126,35 +130,7 @@ const sampleVideos = [
     duration: 95,
     views: 23400,
     likes: 2100,
-    tags: ["comedy", "dating", "relationships"],
-    category: "comedy"
-  },
-  {
-    title: "Working From Home Reality",
-    description: "The truth about working from home that nobody tells you",
-    videoUrl: "/feed/creator3/video2.mp4",
-    thumbnailUrl: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=800&h=600&fit=crop",
-    creatorId: "profile3",
-    creatorName: "Sarah Johnson",
-    creatorAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
-    duration: 78,
-    views: 15600,
-    likes: 1450,
-    tags: ["comedy", "work", "relatable"],
-    category: "comedy"
-  },
-  {
-    title: "Restaurant Etiquette Gone Wrong",
-    description: "When dining out goes hilariously wrong!",
-    videoUrl: "/feed/creator1/video3.mp4",
-    thumbnailUrl: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&h=600&fit=crop",
-    creatorId: "profile1",
-    creatorName: "Max Amini",
-    creatorAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuBiOoA0CPet1puGU2CsaQeYXR38ZqobMsKlndkHzabEtsqOJH5G80g3PAr6PCsTc29KMd-NLsnmdv0kSux-urpd4v7yu3zANpLF7E_zx53NyqdcvYWmaKw23EmZJx53-1uyxMckb_lX4OzCt2ntPuDO7tSE-X4Af3BxLFWmWXWAq7ECJ29zLEOExNUGoAf0FRIG3utY9-oqdWMFOkzt_usKzCqJ0Tv2jFwbOqjItheqTTbjDRurOWdC2m-mPn0GSRKi6sOp9RKvPWI",
-    duration: 67,
-    views: 9800,
-    likes: 920,
-    tags: ["comedy", "food", "funny"],
+    tags: ["comedy", "standup", "controversial"],
     category: "comedy"
   }
 ];
@@ -177,12 +153,13 @@ async function seedDatabase() {
     
     console.log('\n📹 Seeding videos...');
     for (const video of sampleVideos) {
-      const docRef = await db.collection('videos').add({
-        ...video,
+      const { id, ...videoData } = video;
+      await db.collection('videos').doc(id).set({
+        ...videoData,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now()
       });
-      console.log(`✅ Created video: ${video.title} (ID: ${docRef.id})`);
+      console.log(`✅ Created video: ${videoData.title} (ID: ${id})`);
     }
     
     console.log('\n✨ Database seeded successfully!');
