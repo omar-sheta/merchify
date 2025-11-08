@@ -1,89 +1,9 @@
-import React, { useState, useRef } from 'react';
-
-// Trending videos
-const trendingVideos = [
-  { id: 't1', thumbnail: '/trending-1.jpg', url: '/trending-1.mp4', title: 'Epic Hoodie Drop', views: '10K' },
-  { id: 't2', thumbnail: '/trending-2.jpg', url: '/trending-2.mp4', title: 'AI Fashion Revolution', views: '8.5K' },
-  { id: 't3', thumbnail: '/trending-3.jpg', url: '/trending-3.mp4', title: 'Street Style 2025', views: '12K' },
-  { id: 't4', thumbnail: '/trending-4.jpg', url: '/trending-4.mp4', title: 'Retro Vibes Collection', views: '9.2K' },
-  { id: 't5', thumbnail: '/trending-5.jpg', url: '/trending-5.mp4', title: 'Minimalist Aesthetic', views: '15K' },
-  { id: 't6', thumbnail: '/trending-6.jpg', url: '/trending-6.mp4', title: 'Urban Legends Merch', views: '11K' }
-];
-
-const creators = [
-  {
-    id: 1,
-    name: 'Alice Banana',
-    avatar: '/creator-alice.jpg',
-    bio: 'Streetwear designer & banana enthusiast 🍌',
-    videos: [
-      { id: 'a1', thumbnail: '/mock-video-thumb-1.jpg', url: '/mock-video-1.mp4', title: 'Banana Drop 1' },
-      { id: 'a2', thumbnail: '/mock-video-thumb-2.jpg', url: '/mock-video-2.mp4', title: 'Banana Drop 2' }
-    ],
-    merch: [
-      { id: 101, image: '/mock-merch-1.jpg', title: 'Banana Hoodie', likes: 23, comments: 5 },
-      { id: 102, image: '/mock-merch-2.jpg', title: 'Banana Tee', likes: 17, comments: 2 }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Bob Gemini',
-    avatar: '/creator-bob.jpg',
-    bio: 'AI art meets fashion. Gemini drops every week ✨',
-    videos: [
-      { id: 'b1', thumbnail: '/mock-video-thumb-3.jpg', url: '/mock-video-3.mp4', title: 'Gemini Launch' },
-      { id: 'b2', thumbnail: '/mock-video-thumb-4.jpg', url: '/mock-video-4.mp4', title: 'Gemini Behind the Scenes' }
-    ],
-    merch: [
-      { id: 201, image: '/mock-merch-3.jpg', title: 'Gemini Cap', likes: 12, comments: 1 },
-      { id: 202, image: '/mock-merch-4.jpg', title: 'Gemini Hoodie', likes: 9, comments: 0 }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Carlos Retro',
-    avatar: '/creator-carlos.jpg',
-    bio: 'Vintage vibes & 90s nostalgia 📼',
-    videos: [
-      { id: 'c1', thumbnail: '/mock-video-thumb-5.jpg', url: '/mock-video-5.mp4', title: 'Retro Collection' },
-      { id: 'c2', thumbnail: '/mock-video-thumb-6.jpg', url: '/mock-video-6.mp4', title: '90s Inspired' }
-    ],
-    merch: [
-      { id: 301, image: '/mock-merch-5.jpg', title: 'Retro Tee', likes: 31, comments: 8 },
-      { id: 302, image: '/mock-merch-6.jpg', title: 'Vintage Cap', likes: 19, comments: 3 }
-    ]
-  },
-  {
-    id: 4,
-    name: 'Diana Minimal',
-    avatar: '/creator-diana.jpg',
-    bio: 'Less is more. Minimalist designs 🖤',
-    videos: [
-      { id: 'd1', thumbnail: '/mock-video-thumb-7.jpg', url: '/mock-video-7.mp4', title: 'Minimal Aesthetic' },
-      { id: 'd2', thumbnail: '/mock-video-thumb-8.jpg', url: '/mock-video-8.mp4', title: 'Clean Lines' }
-    ],
-    merch: [
-      { id: 401, image: '/mock-merch-7.jpg', title: 'Minimal Hoodie', likes: 42, comments: 12 },
-      { id: 402, image: '/mock-merch-8.jpg', title: 'Basic Tee', likes: 28, comments: 4 }
-    ]
-  },
-  {
-    id: 5,
-    name: 'Ethan Urban',
-    avatar: '/creator-ethan.jpg',
-    bio: 'Street culture & urban legends 🌃',
-    videos: [
-      { id: 'e1', thumbnail: '/mock-video-thumb-9.jpg', url: '/mock-video-9.mp4', title: 'Urban Legends' },
-      { id: 'e2', thumbnail: '/mock-video-thumb-10.jpg', url: '/mock-video-10.mp4', title: 'City Nights' }
-    ],
-    merch: [
-      { id: 501, image: '/mock-merch-9.jpg', title: 'Urban Jacket', likes: 56, comments: 15 },
-      { id: 502, image: '/mock-merch-10.jpg', title: 'Street Cap', likes: 33, comments: 7 }
-    ]
-  }
-];
+import React, { useState, useRef, useEffect } from 'react';
 
 export default function Discover() {
+  const [trendingVideos, setTrendingVideos] = useState([]);
+  const [creators, setCreators] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const trendingScrollRef = useRef(null);
@@ -93,6 +13,77 @@ export default function Discover() {
       const scrollAmount = direction === 'left' ? -500 : 500;
       ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
+  };
+
+  // Fetch data from Firebase
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch videos
+        const videosRes = await fetch('/api/feed');
+        const videosData = await videosRes.json();
+        
+        // Format trending videos (top 6 by views)
+        const trending = videosData.items
+          ?.sort((a, b) => (b.views || 0) - (a.views || 0))
+          .slice(0, 6)
+          .map(video => ({
+            id: video.id,
+            thumbnail: video.poster,
+            url: video.src,
+            title: video.title,
+            views: formatViews(video.views || 0)
+          })) || [];
+        
+        setTrendingVideos(trending);
+        
+        // Fetch profiles
+        const profilesRes = await fetch('/api/profiles');
+        const profilesData = await profilesRes.json();
+        
+        // Group videos by creator
+        const creatorMap = {};
+        videosData.items?.forEach(video => {
+          const creatorId = video.creator?.id || video.creatorId;
+          if (!creatorMap[creatorId]) {
+            creatorMap[creatorId] = [];
+          }
+          creatorMap[creatorId].push({
+            id: video.id,
+            thumbnail: video.poster,
+            url: video.src,
+            title: video.title
+          });
+        });
+        
+        // Format creators with their videos
+        const creatorsWithVideos = profilesData.profiles?.map(profile => ({
+          id: profile.id,
+          name: profile.displayName,
+          avatar: profile.avatar,
+          bio: profile.bio,
+          videos: creatorMap[profile.id] || [],
+          merch: [] // Merch functionality can be added later
+        })) || [];
+        
+        setCreators(creatorsWithVideos);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Helper function to format view counts
+  const formatViews = (views) => {
+    if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
+    if (views >= 1000) return `${(views / 1000).toFixed(1)}K`;
+    return views.toString();
   };
 
   // Autoplay functionality for trending videos
@@ -120,12 +111,26 @@ export default function Discover() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {loading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading creators...</p>
+          </div>
+        </div>
+      ) : (
+        <>
       {/* Trending Now Section */}
       <div className="w-full mb-12 bg-white border-b border-gray-200">
         <div className="max-w-[1600px] mx-auto px-8 py-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-3xl font-bold text-gray-900">Trending Now</h2>
           </div>
+          {trendingVideos.length === 0 ? (
+            <div className="text-center py-10 text-gray-500">
+              No trending videos available yet
+            </div>
+          ) : (
           <div className="relative group px-16">
             <button
               onClick={() => scroll(trendingScrollRef, 'left')}
@@ -168,12 +173,18 @@ export default function Discover() {
             ))}
           </div>
           </div>
+          )}
         </div>
       </div>
 
       <div className="w-full px-8 pb-10">
         <div className="max-w-[1600px] mx-auto">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Discover Creators</h1>
+          {creators.length === 0 ? (
+            <div className="text-center py-10 text-gray-500">
+              No creators available yet
+            </div>
+          ) : (
           <div className="flex gap-8 overflow-x-auto pb-4 scrollbar-hide">
           {creators.map((creator) => (
             <div key={creator.id} className="min-w-[400px] bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 flex flex-col gap-4 border border-gray-200">
@@ -233,8 +244,11 @@ export default function Discover() {
             </div>
           ))}
           </div>
+          )}
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
