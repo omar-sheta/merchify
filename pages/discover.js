@@ -376,7 +376,7 @@ export default function Discover() {
 									{creators.map((creator) => (
 										<Card
 											key={creator.id}
-											className="min-w-[400px] p-6 flex flex-col gap-4"
+											className="w-[400px] flex-shrink-0 p-6 flex flex-col gap-4"
 										>
 											<div className="flex items-center gap-4">
 												<img
@@ -424,8 +424,10 @@ export default function Discover() {
 																	</div>
 																</div>
 															</div>
-															<div className="font-medium text-sm text-text-primary group-hover:text-accent-orange transition-colors">
-																{video.title}
+															<div className="w-40">
+																<div className="font-medium text-sm text-text-primary group-hover:text-accent-orange transition-colors line-clamp-2">
+																	{video.title}
+																</div>
 															</div>
 														</Link>
 													))}
