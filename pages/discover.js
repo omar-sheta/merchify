@@ -379,14 +379,18 @@ export default function Discover() {
 											className="w-[400px] flex-shrink-0 p-6 flex flex-col gap-4 snap-center"
 										>
 											<div className="flex items-center gap-4">
-												<img
-													src={creator.avatar}
-													alt={creator.name}
-													className="w-16 h-16 rounded-full object-cover shadow-md"
-												/>
+												<div className="relative">
+													<div className="absolute inset-0 bg-accent-orange/30 blur-xl rounded-full"></div>
+													<img
+														src={creator.avatar}
+														alt={creator.name}
+														className="relative w-16 h-16 rounded-full object-cover shadow-xl ring-2 ring-accent-orange/50"
+													/>
+												</div>
 												<div className="flex-1">
-													<div className="text-xl font-bold text-text-primary mb-0.5">
-														{creator.name}
+													<div className="text-xl font-bold text-text-primary mb-0.5 relative inline-block">
+														<span className="relative z-10">{creator.name}</span>
+														<div className="absolute -inset-1 bg-accent-orange/20 blur-sm rounded-lg -z-0"></div>
 													</div>
 													<div className="text-sm text-text-secondary">
 														{creator.bio}
