@@ -1,87 +1,96 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 
-// Trending videos
-const trendingVideos = [
-  { id: 't1', thumbnail: '/trending-1.jpg', url: '/trending-1.mp4', title: 'Epic Hoodie Drop', views: '10K' },
-  { id: 't2', thumbnail: '/trending-2.jpg', url: '/trending-2.mp4', title: 'AI Fashion Revolution', views: '8.5K' },
-  { id: 't3', thumbnail: '/trending-3.jpg', url: '/trending-3.mp4', title: 'Street Style 2025', views: '12K' },
-  { id: 't4', thumbnail: '/trending-4.jpg', url: '/trending-4.mp4', title: 'Retro Vibes Collection', views: '9.2K' },
-  { id: 't5', thumbnail: '/trending-5.jpg', url: '/trending-5.mp4', title: 'Minimalist Aesthetic', views: '15K' },
-  { id: 't6', thumbnail: '/trending-6.jpg', url: '/trending-6.mp4', title: 'Urban Legends Merch', views: '11K' }
-];
+export default function Discover() {
+  const [expanded, setExpanded] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const trendingScrollRef = useRef(null);
+  const [trendingVideos, setTrendingVideos] = useState([]);
+  const [creators, setCreators] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const creators = [
-  {
-    id: 1,
-    name: 'Alice Banana',
-    avatar: '/creator-alice.jpg',
-    bio: 'Streetwear designer & banana enthusiast 🍌',
-    videos: [
-      { id: 'a1', thumbnail: '/mock-video-thumb-1.jpg', url: '/mock-video-1.mp4', title: 'Banana Drop 1' },
-      { id: 'a2', thumbnail: '/mock-video-thumb-2.jpg', url: '/mock-video-2.mp4', title: 'Banana Drop 2' }
-    ],
-    merch: [
-      { id: 101, image: '/mock-merch-1.jpg', title: 'Banana Hoodie', likes: 23, comments: 5 },
-      { id: 102, image: '/mock-merch-2.jpg', title: 'Banana Tee', likes: 17, comments: 2 }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Bob Gemini',
-    avatar: '/creator-bob.jpg',
-    bio: 'AI art meets fashion. Gemini drops every week ✨',
-    videos: [
-      { id: 'b1', thumbnail: '/mock-video-thumb-3.jpg', url: '/mock-video-3.mp4', title: 'Gemini Launch' },
-      { id: 'b2', thumbnail: '/mock-video-thumb-4.jpg', url: '/mock-video-4.mp4', title: 'Gemini Behind the Scenes' }
-    ],
-    merch: [
-      { id: 201, image: '/mock-merch-3.jpg', title: 'Gemini Cap', likes: 12, comments: 1 },
-      { id: 202, image: '/mock-merch-4.jpg', title: 'Gemini Hoodie', likes: 9, comments: 0 }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Carlos Retro',
-    avatar: '/creator-carlos.jpg',
-    bio: 'Vintage vibes & 90s nostalgia 📼',
-    videos: [
-      { id: 'c1', thumbnail: '/mock-video-thumb-5.jpg', url: '/mock-video-5.mp4', title: 'Retro Collection' },
-      { id: 'c2', thumbnail: '/mock-video-thumb-6.jpg', url: '/mock-video-6.mp4', title: '90s Inspired' }
-    ],
-    merch: [
-      { id: 301, image: '/mock-merch-5.jpg', title: 'Retro Tee', likes: 31, comments: 8 },
-      { id: 302, image: '/mock-merch-6.jpg', title: 'Vintage Cap', likes: 19, comments: 3 }
-    ]
-  },
-  {
-    id: 4,
-    name: 'Diana Minimal',
-    avatar: '/creator-diana.jpg',
-    bio: 'Less is more. Minimalist designs 🖤',
-    videos: [
-      { id: 'd1', thumbnail: '/mock-video-thumb-7.jpg', url: '/mock-video-7.mp4', title: 'Minimal Aesthetic' },
-      { id: 'd2', thumbnail: '/mock-video-thumb-8.jpg', url: '/mock-video-8.mp4', title: 'Clean Lines' }
-    ],
-    merch: [
-      { id: 401, image: '/mock-merch-7.jpg', title: 'Minimal Hoodie', likes: 42, comments: 12 },
-      { id: 402, image: '/mock-merch-8.jpg', title: 'Basic Tee', likes: 28, comments: 4 }
-    ]
-  },
-  {
-    id: 5,
-    name: 'Ethan Urban',
-    avatar: '/creator-ethan.jpg',
-    bio: 'Street culture & urban legends 🌃',
-    videos: [
-      { id: 'e1', thumbnail: '/mock-video-thumb-9.jpg', url: '/mock-video-9.mp4', title: 'Urban Legends' },
-      { id: 'e2', thumbnail: '/mock-video-thumb-10.jpg', url: '/mock-video-10.mp4', title: 'City Nights' }
-    ],
-    merch: [
-      { id: 501, image: '/mock-merch-9.jpg', title: 'Urban Jacket', likes: 56, comments: 15 },
-      { id: 502, image: '/mock-merch-10.jpg', title: 'Street Cap', likes: 33, comments: 7 }
-    ]
-  }
-];
+  const scroll = (ref, direction) => {
+    if (ref.current) {
+      const scrollAmount = direction === 'left' ? -500 : 500;
+      ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  // Fetch data from Firebase
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch videos
+        const videosRes = await fetch('/api/feed');
+        const videosData = await videosRes.json();
+        
+        // Format trending videos (top 6 by views)
+        const trending = videosData.items
+          ?.sort((a, b) => (b.views || 0) - (a.views || 0))
+          .slice(0, 6)
+          .map(video => ({
+            id: video.id,
+            thumbnail: video.poster,
+            url: video.src,
+            title: video.title,
+            views: formatViews(video.views || 0)
+          })) || [];
+        
+        console.log('Trending videos loaded:', trending.length, 'videos');
+        if (trending.length > 0) {
+          console.log('First trending video ID:', trending[0].id);
+        }
+        
+        setTrendingVideos(trending);
+        
+        // Fetch profiles
+        const profilesRes = await fetch('/api/profiles');
+        const profilesData = await profilesRes.json();
+        
+        // Group videos by creator
+        const creatorMap = {};
+        videosData.items?.forEach(video => {
+          const creatorId = video.creator?.id || video.creatorId;
+          if (!creatorMap[creatorId]) {
+            creatorMap[creatorId] = [];
+          }
+          creatorMap[creatorId].push({
+            id: video.id,
+            thumbnail: video.poster,
+            url: video.src,
+            title: video.title
+          });
+        });
+        
+        // Format creators with their videos
+        const creatorsWithVideos = profilesData.profiles?.map(profile => ({
+          id: profile.id,
+          name: profile.displayName,
+          avatar: profile.avatar,
+          bio: profile.bio,
+          videos: creatorMap[profile.id] || [],
+          merch: [] // Merch functionality can be added later
+        })) || [];
+        
+        setCreators(creatorsWithVideos);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Helper function to format view counts
+  const formatViews = (views) => {
+    if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
+    if (views >= 1000) return `${(views / 1000).toFixed(1)}K`;
+    return views.toString();
+  };
 
 export default function Discover() {
   const [expanded, setExpanded] = useState(null);
@@ -95,6 +104,28 @@ export default function Discover() {
     }
   };
 
+  // Autoplay functionality for trending videos
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (trendingScrollRef.current) {
+        const maxSlides = trendingVideos.length;
+        const nextSlide = (currentSlide + 1) % maxSlides;
+        setCurrentSlide(nextSlide);
+        
+        // Scroll to next video
+        const scrollWidth = trendingScrollRef.current.scrollWidth;
+        const containerWidth = trendingScrollRef.current.clientWidth;
+        const scrollPosition = (scrollWidth / maxSlides) * nextSlide;
+        
+        trendingScrollRef.current.scrollTo({
+          left: scrollPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 4000); // Change video every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [currentSlide]);
   // Autoplay functionality for trending videos
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -144,7 +175,7 @@ export default function Discover() {
             </button>
           <div ref={trendingScrollRef} className="flex gap-6 overflow-x-auto pb-4 -mx-2 px-2 scrollbar-hide">
             {trendingVideos.map((video) => (
-              <a
+              <Link
                 key={video.id}
                 href={`/?video=${video.id}`}
                 className="group flex-shrink-0 w-[500px]"
@@ -165,7 +196,7 @@ export default function Discover() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
           </div>
@@ -190,7 +221,7 @@ export default function Discover() {
                 <div className="text-sm font-semibold text-gray-300 mb-3">Videos</div>
                 <div className="flex gap-3 overflow-x-auto pb-2">
                   {creator.videos.map((video) => (
-                    <a
+                    <Link
                       key={video.id}
                       href={`/?video=${video.id}`}
                       className="group block min-w-[160px]"
@@ -204,8 +235,8 @@ export default function Discover() {
                           </div>
                         </div>
                       </div>
-                      <div className="font-medium text-sm text-gray-100 group-hover:text-[#FDE047] transition-colors">{video.title}</div>
-                    </a>
+                      <div className="font-medium text-sm text-gray-100 group-hover:text-[var(--brand-primary)] transition-colors">{video.title}</div>
+                    </Link>
                   ))}
                 </div>
               </div>
