@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
+import { FALLBACK_CAPTURE_IMAGE } from '../lib/placeholders'
 
 export default function Home() {
   const [capturedFrame, setCapturedFrame] = useState(null)
@@ -116,7 +117,7 @@ export default function Home() {
       const ctx = canvas.getContext('2d')
       try {
         ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height)
-        const dataUrl = canvas.toDataURL('image/png')
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.88)
         setCapturedFrame(dataUrl)
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('capturedFrame', dataUrl)
@@ -128,7 +129,7 @@ export default function Home() {
       }
     }
 
-    const imageUrl = '/images/rinku_meme.jpeg'
+    const imageUrl = FALLBACK_CAPTURE_IMAGE
     setCapturedFrame(imageUrl)
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('capturedFrame', imageUrl)
@@ -186,7 +187,7 @@ export default function Home() {
             ) : (
               <div className="flex items-center justify-center min-h-[300px] bg-black rounded-xl overflow-auto">
                 <img
-                  src="/images/rinku_meme.jpeg"
+                  src={FALLBACK_CAPTURE_IMAGE}
                   alt="Captured frame preview"
                   className="rounded-xl shadow-lg border border-gray-200 bg-black"
                   style={{ display: 'block', maxWidth: '100%', height: 'auto' }}

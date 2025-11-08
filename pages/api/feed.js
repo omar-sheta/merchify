@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { FALLBACK_CAPTURE_IMAGE } from '../../lib/placeholders'
 
 export default function handler(req, res) {
   const feedRoot = path.join(process.cwd(), 'public', 'feed')
@@ -19,7 +20,7 @@ export default function handler(req, res) {
         id: `${creator.name}-${idx}`,
         title: `${creator.name} - ${file}`,
         src: `/feed/${creator.name}/${file}`,
-        poster: '/images/rinku_meme.jpeg'
+  poster: FALLBACK_CAPTURE_IMAGE
       })
     })
   })

@@ -272,8 +272,8 @@ export default function Checkout() {
 
               <div className="mb-6">
                 <img 
-                  src={orderData.capturedFrame} 
-                  alt="Your design" 
+                  src={orderData.mockupImage || orderData.capturedFrame} 
+                  alt="Your merch mockup" 
                   className="w-full rounded-lg shadow-md border border-gray-200 mb-4"
                 />
                 {orderData.prompt && (

@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-  "dev:host": "node ./scripts/dev-host.js",
+    "dev:host": "node ./scripts/dev-host.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/genai": "^1.29.0",
     "@tailwindcss/postcss": "^4.1.17",
     "autoprefixer": "^10.4.21",
     "next": "14.1.0",
