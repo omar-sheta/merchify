@@ -7,3 +7,5 @@ node_modules/
 
 # Local logs
 npm-debug.log*
+firebase-admin-key.json
+firebase-data.json
