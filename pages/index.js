@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState, useRef } from 'react'
+import StorageService from '../frontend/services/StorageService'
 
 export default function Home() {
   const [capturedFrame, setCapturedFrame] = useState(null)
@@ -8,11 +9,9 @@ export default function Home() {
 
   // For demo: use static image as captured frame
   function captureFrame() {
-    const imageUrl = '/images/rinku_meme.jpeg';
-    setCapturedFrame(imageUrl);
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('capturedFrame', imageUrl);
-    }
+    const imageUrl = '/images/rinku_meme.jpeg'
+    setCapturedFrame(imageUrl)
+    StorageService.saveCapturedFrame(imageUrl)
   }
 
   return (

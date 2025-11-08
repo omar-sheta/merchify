@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import StorageService from '../frontend/services/StorageService'
+import { PRODUCTS, COLORS, SIZES, getProductById, getColorById, calculateOrderTotal } from '../frontend/models/ProductCatalog'
 
 export default function Customize() {
   const router = useRouter()
@@ -12,51 +14,31 @@ export default function Customize() {
   const [quantity, setQuantity] = useState(1)
 
   useEffect(() => {
-    // Load captured frame from sessionStorage
-    if (typeof window !== 'undefined') {
-      const frame = sessionStorage.getItem('capturedFrame')
-      if (!frame) {
-        // Redirect back to home if no frame captured
-        router.push('/')
-      } else {
-        setCapturedFrame(frame)
-      }
+    // Load captured frame from storage service
+    const frame = StorageService.getCapturedFrame()
+    if (!frame) {
+      // Redirect back to home if no frame captured
+      router.push('/')
+    } else {
+      setCapturedFrame(frame)
     }
   }, [router])
 
-  const products = [
-    { id: 'tshirt', name: 'T-Shirt', price: 24.99, icon: '👕' },
-    { id: 'hoodie', name: 'Hoodie', price: 44.99, icon: '🧥' },
-    { id: 'mug', name: 'Mug', price: 14.99, icon: '☕' },
-    { id: 'poster', name: 'Poster', price: 19.99, icon: '🖼️' },
-  ]
-
-  const colors = [
-    { id: 'white', name: 'White', hex: '#FFFFFF' },
-    { id: 'black', name: 'Black', hex: '#000000' },
-    { id: 'navy', name: 'Navy', hex: '#1E3A8A' },
-    { id: 'red', name: 'Red', hex: '#DC2626' },
-  ]
-
-  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
-
-  const selectedProductData = products.find(p => p.id === selectedProduct)
-  const totalPrice = selectedProductData ? (selectedProductData.price * quantity).toFixed(2) : '0.00'
+  const selectedProductData = getProductById(selectedProduct)
+  const totalPrice = calculateOrderTotal(selectedProductData, quantity)
 
   function proceedToCheckout() {
-    // Store order data
-    if (typeof window !== 'undefined') {
-      const orderData = {
-        capturedFrame,
-        product: selectedProductData,
-        color: colors.find(c => c.id === selectedColor),
-        size: selectedSize,
-        quantity,
-        totalPrice
-      }
-      sessionStorage.setItem('orderData', JSON.stringify(orderData))
-      router.push('/checkout')
+    // Store order data using storage service
+    const orderData = {
+      capturedFrame,
+      product: selectedProductData,
+      color: getColorById(selectedColor),
+      size: selectedSize,
+      quantity,
+      totalPrice
     }
+    StorageService.saveOrderData(orderData)
+    router.push('/checkout')
   }
 
   if (!capturedFrame) {
@@ -97,7 +79,7 @@ export default function Customize() {
             <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-8 mb-6 min-h-[400px] flex items-center justify-center">
               <div className="text-center">
                 <div className="text-6xl mb-4">{selectedProductData.icon}</div>
-                <p className="text-gray-600 font-medium mb-4">{selectedProductData.name} - {colors.find(c => c.id === selectedColor).name}</p>
+                <p className="text-gray-600 font-medium mb-4">{selectedProductData.name} - {getColorById(selectedColor).name}</p>
                 <img 
                   src={capturedFrame} 
                   alt="Merchandise preview"
@@ -124,7 +106,7 @@ export default function Customize() {
             <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Select Product</h3>
               <div className="grid grid-cols-2 gap-4">
-                {products.map((product) => (
+                {PRODUCTS.map((product) => (
                   <button
                     key={product.id}
                     onClick={() => setSelectedProduct(product.id)}
@@ -146,7 +128,7 @@ export default function Customize() {
             <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Select Color</h3>
               <div className="flex gap-4">
-                {colors.map((color) => (
+                {COLORS.map((color) => (
                   <button
                     key={color.id}
                     onClick={() => setSelectedColor(color.id)}
@@ -167,7 +149,7 @@ export default function Customize() {
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Size</label>
                 <div className="flex gap-2">
-                  {sizes.map((size) => (
+                  {SIZES.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}

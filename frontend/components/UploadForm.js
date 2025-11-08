@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import VideoApiClient from '../services/api/VideoApiClient'
 
 export default function UploadForm() {
   const [file, setFile] = useState(null)
@@ -12,20 +13,9 @@ export default function UploadForm() {
     setIsUploading(true)
     setMessage('')
 
-    const fd = new FormData()
-    fd.append('file', file)
-
     try {
-      const res = await fetch('/api/upload-mux', {
-        method: 'POST',
-        body: fd,
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setMessage(`✅ Upload successful! Thumbnail: ${data.thumbnail || 'Generated'}`)
-      } else {
-        setMessage(`❌ Upload failed: ${data.error || res.statusText}`)
-      }
+      const data = await VideoApiClient.uploadVideo(file)
+      setMessage(`✅ Upload successful! Thumbnail: ${data.thumbnail || 'Generated'}`)
     } catch (err) {
       setMessage(`❌ Upload error: ${err.message}`)
     } finally {
