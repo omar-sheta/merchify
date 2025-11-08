@@ -226,18 +226,18 @@ export default function Home() {
   }, [activeVideo?.thumb, activeVideo?.id])
 
   return (
-    <div className="min-h-screen" style={{background: 'var(--brand-bg)'}}>
+    <div className="min-h-screen bg-bg-deep-black">
       <Head>
-        <title>Merchify — Create Custom Merchandise from Videos</title>
+        <title>Jokester — Turn Your Funniest Moments into Merch</title>
       </Head>
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-10 overflow-hidden">
         <div className="relative max-w-6xl mx-auto px-6 text-center mb-10">
           <SectionHeading
-            eyebrow="Step 1 of 3 — Capture Your Moment"
-            title="Turn Your video into merch people actually want"
-            subtitle="Play a clip, pause on the punchline, and capture the exact frame you love. We’ll print it perfectly on premium products."
+            eyebrow="Step 1: Capture a Moment"
+            title="Immortalize Your Funniest Moments"
+            subtitle="Play a video, pause at the perfect scene, and capture the frame. We'll turn your favorite moments into high-quality, custom merchandise that gets a laugh."
           />
         </div>
       </section>
@@ -246,11 +246,11 @@ export default function Home() {
       <section className="max-w-5xl mx-auto px-6 pb-16">
         <Card>
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Play your video</h2>
-            <p className="text-gray-600">Pause at the perfect moment and capture the frame for your merch.</p>
+            <h2 className="text-2xl font-semibold text-text-primary mb-2">Play Your Video</h2>
+            <p className="text-text-secondary">Pause at the perfect moment and capture the frame for your merch.</p>
           </div>
 
-          <div className="relative bg-black rounded-xl overflow-hidden shadow-lg mb-6 border border-black/40">
+          <div className="relative bg-bg-deep-black rounded-xl overflow-hidden mb-6 border border-bg-card-light">
             {/* Player: show active video if available, otherwise the static image */}
             {activeVideo && activeVideo.src ? (
               <video
@@ -289,22 +289,23 @@ export default function Home() {
 
           {/* Move the full video list below the player so users can choose another video */}
           <div className="mb-6">
-            <h4 className="text-sm text-gray-400 mb-2">Choose a video</h4>
+            <h4 className="text-sm text-text-secondary mb-2">Choose a video</h4>
             <div className="flex gap-3 overflow-x-auto py-2">
               {videos.map((v) => (
                 <button
                   key={v.id}
                   onClick={() => setActiveVideo(v)}
-                  className={`flex-shrink-0 w-40 h-24 rounded-lg overflow-hidden border-2 ${activeVideo?.id === v.id ? 'border-blue-500' : 'border-gray-200'}`}
+                  className={`group relative flex-shrink-0 w-40 h-24 rounded-lg overflow-hidden border-2 transition-all ${activeVideo?.id === v.id ? 'border-transparent' : 'border-bg-card-light hover:border-bg-card'}`}
                   title={v.title}
                 >
                   <img src={v.thumb || v.poster} alt={v.title} className="w-full h-full object-cover bg-black" />
+                  {activeVideo?.id === v.id && <div className="absolute inset-0 ring-2 ring-offset-2 ring-offset-bg-card ring-accent-orange rounded-lg" />}
                 </button>
               ))}
             </div>
           </div>
 
-          <Button onClick={captureFrame} size="lg" className="w-full">
+          <Button onClick={captureFrame} size="lg" variant="primary" className="w-full">
             <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -313,28 +314,30 @@ export default function Home() {
           </Button>
 
           {capturedFrame && (
-            <div className="mt-8 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+            <Card padding="p-6" className="mt-8 bg-bg-deep-black">
               <div className="flex items-center mb-4">
-                <svg className="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <h3 className="text-xl font-semibold text-gray-900">Frame Captured!</h3>
+                <h3 className="text-xl font-semibold text-text-primary">Frame Captured!</h3>
               </div>
               
               <div className="mb-6">
-                <img src={capturedFrame} alt="Captured frame" className="w-full max-w-md mx-auto rounded-lg shadow-md border border-gray-200" />
+                <img src={capturedFrame} alt="Captured frame" className="w-full max-w-md mx-auto rounded-lg shadow-md border border-bg-card-light" />
               </div>
 
               <Link 
                 href="/customize"
-                className="inline-flex items-center justify-center w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                passHref
               >
-                Continue to Customize Merchandise
-                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <Button as="a" variant="primary" size="lg" className="w-full">
+                  Continue to Customize
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Button>
               </Link>
-            </div>
+            </Card>
           )}
         </Card>
       </section>
@@ -342,9 +345,9 @@ export default function Home() {
       {/* How it Works */}
       <section className="max-w-6xl mx-auto px-6 pb-24">
         <SectionHeading
-          eyebrow="Simple flow"
-          title="From punchline to product in three steps"
-          subtitle="Capture the frame • Customize the product • Checkout with confidence"
+          eyebrow="How It Works"
+          title="From Screen to Stuff in 3 Steps"
+          subtitle="It's simple: capture a frame, customize your product, and check out. Your legendary merch will be on its way."
         />
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -352,32 +355,29 @@ export default function Home() {
             { 
               step: '1', 
               title: 'Capture Frame', 
-              desc: 'Play your video and capture the perfect moment',
-              color: 'from-purple-500 to-violet-600',
+              desc: 'Play a video and pause to grab the perfect, meme-worthy moment.',
               current: true
             },
             { 
               step: '2', 
-              title: 'Customize', 
-              desc: 'Choose your product and customize the design',
-              color: 'from-violet-500 to-indigo-600',
+              title: 'Customize Merch', 
+              desc: 'Slap your frame on a shirt, mug, or whatever. Add text. Make it yours.',
               current: false
             },
             { 
               step: '3', 
               title: 'Checkout', 
-              desc: 'Review and complete your order',
-              color: 'from-orange-500 to-amber-600',
+              desc: 'Confirm your masterpiece and place your order. We’ll handle the rest.',
               current: false
             },
           ].map((item, i) => (
-            <div key={i} className={`relative bg-white rounded-xl p-8 shadow-lg border-2 ${item.current ? 'border-blue-500' : 'border-gray-200'}`}>
-              <div className={`absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br ${item.color} rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
+            <Card key={i} className={`relative p-8 ${item.current ? 'ring-2 ring-accent-orange' : ''}`}>
+              <div className={`absolute -top-4 -left-4 w-12 h-12 bg-accent-orange rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
                 {item.step}
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 mt-4">{item.title}</h3>
-              <p className="text-gray-600">{item.desc}</p>
-            </div>
+              <h3 className="text-xl font-semibold text-text-primary mb-2 mt-4">{item.title}</h3>
+              <p className="text-text-secondary">{item.desc}</p>
+            </Card>
           ))}
         </div>
       </section>

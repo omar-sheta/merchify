@@ -86,10 +86,10 @@ export default function Checkout() {
 
   if (!orderData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-bg-deep-black">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-orange mx-auto mb-4"></div>
+          <p className="text-text-secondary">Loading order details...</p>
         </div>
       </div>
     )
@@ -97,60 +97,59 @@ export default function Checkout() {
 
   if (orderComplete) {
     return (
-      <div className="bg-gradient-to-b from-slate-50 via-white to-green-50 min-h-screen py-12">
+      <div className="min-h-screen py-12 flex items-center justify-center bg-bg-deep-black">
         <Head>
-          <title>Order Complete — Merchify</title>
+          <title>Order Complete — Jokester</title>
         </Head>
 
-        <div className="max-w-2xl mx-auto px-6">
-          <div className="bg-white rounded-2xl shadow-2xl p-12 border border-gray-100 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="max-w-2xl mx-auto px-6 w-full">
+          <Card padding="p-12" className="text-center">
+            <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-500/20">
+              <svg className="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
 
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Order Confirmed!</h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Thank you for your order. We'll send you an email confirmation shortly.
+            <h1 className="text-4xl font-bold text-text-primary mb-4">Order Confirmed!</h1>
+            <p className="text-xl text-text-secondary mb-8">
+              Thanks for your order! We'll send a confirmation to your email shortly.
             </p>
 
-            <div className="bg-green-50 rounded-xl p-6 border border-green-200 mb-8">
-              <p className="text-sm text-green-800">
+            <div className="bg-bg-card rounded-xl p-6 border border-bg-card-light mb-8">
+              <p className="text-sm text-text-secondary">
                 <strong>Order Number:</strong> #{Math.random().toString(36).substr(2, 9).toUpperCase()}
               </p>
-              <p className="text-sm text-green-800 mt-2">
+              <p className="text-sm text-text-secondary mt-2">
                 <strong>Email:</strong> {formData.email}
               </p>
             </div>
 
-            <Link 
-              href="/"
-              className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
-            >
-              Create Another Merchandise
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+            <Link href="/">
+              <Button variant="primary" size="lg">
+                Create Another Masterpiece
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Button>
             </Link>
-          </div>
+          </Card>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen py-12" style={{background:'var(--brand-bg)'}}>
+    <div className="min-h-screen py-12 bg-bg-deep-black">
       <Head>
-        <title>Checkout — Merchify</title>
+        <title>Checkout — Jokester</title>
       </Head>
 
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <SectionHeading
-          eyebrow="Step 3 of 3 — Checkout"
-          title="Wrap it up and we print"
-          subtitle="Confirm shipping details and place your order. Your captured frame is ready to become merch."
+          eyebrow="Step 3: Checkout"
+          title="Finalize Your Order"
+          subtitle="Confirm your shipping details and place your order. Your custom merch is just a few clicks away."
           align="left"
           className="mb-6"
         />
@@ -161,10 +160,10 @@ export default function Checkout() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Contact Section */}
               <Card padding="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact</h2>
+                <h2 className="text-lg font-semibold text-text-primary mb-4">Contact</h2>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-text-secondary mb-2">
                       Full Name *
                     </label>
                     <input
@@ -174,12 +173,12 @@ export default function Checkout() {
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 bg-bg-card border border-bg-card-light rounded-xl focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors text-text-primary"
                       placeholder="John Doe"
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">
                       Email Address *
                     </label>
                     <input
@@ -189,7 +188,7 @@ export default function Checkout() {
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 bg-bg-card border border-bg-card-light rounded-xl focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors text-text-primary"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -198,10 +197,10 @@ export default function Checkout() {
 
               {/* Shipping Section */}
               <Card padding="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Shipping</h2>
+                <h2 className="text-lg font-semibold text-text-primary mb-4">Shipping</h2>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="address" className="block text-sm font-medium text-text-secondary mb-2">
                       Street Address *
                     </label>
                     <input
@@ -211,12 +210,12 @@ export default function Checkout() {
                       required
                       value={formData.address}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 bg-bg-card border border-bg-card-light rounded-xl focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors text-text-primary"
                       placeholder="123 Main St"
                     />
                   </div>
                   <div>
-                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="city" className="block text-sm font-medium text-text-secondary mb-2">
                       City *
                     </label>
                     <input
@@ -226,12 +225,12 @@ export default function Checkout() {
                       required
                       value={formData.city}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 bg-bg-card border border-bg-card-light rounded-xl focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors text-text-primary"
                       placeholder="New York"
                     />
                   </div>
                   <div>
-                    <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="zipCode" className="block text-sm font-medium text-text-secondary mb-2">
                       ZIP Code *
                     </label>
                     <input
@@ -241,12 +240,12 @@ export default function Checkout() {
                       required
                       value={formData.zipCode}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 bg-bg-card border border-bg-card-light rounded-xl focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors text-text-primary"
                       placeholder="10001"
                     />
                   </div>
                   <div>
-                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="country" className="block text-sm font-medium text-text-secondary mb-2">
                       Country *
                     </label>
                     <select
@@ -255,7 +254,7 @@ export default function Checkout() {
                       required
                       value={formData.country}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 bg-bg-card border border-bg-card-light rounded-xl focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors text-text-primary"
                     >
                       <option>United States</option>
                       <option>Canada</option>
@@ -295,49 +294,49 @@ export default function Checkout() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <Card className="sticky top-24" padding="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+              <h2 className="text-lg font-semibold text-text-primary mb-4">Order Summary</h2>
 
               <div className="mb-5">
                 <img 
                   src={orderData.mockupImage || orderData.capturedFrame} 
                   alt="Your merch mockup" 
-                  className="w-full rounded-lg shadow-md border border-gray-200 mb-4"
+                  className="w-full rounded-lg shadow-md border border-bg-card-light mb-4"
                 />
                 {orderData.prompt && (
-                  <div className="mb-3 p-3 bg-gray-50 rounded-md border border-gray-100">
-                    <div className="text-sm text-gray-700 font-medium mb-1">Designer / AI Prompt</div>
-                    <div className="text-sm text-gray-600 whitespace-pre-wrap">{orderData.prompt}</div>
+                  <div className="mb-3 p-3 bg-bg-card rounded-md border border-bg-card-light">
+                    <div className="text-sm text-text-secondary font-medium mb-1">Designer / AI Prompt</div>
+                    <div className="text-sm text-text-secondary whitespace-pre-wrap">{orderData.prompt}</div>
                   </div>
                 )}
-                <div className="text-base font-semibold text-gray-900 mb-1">
+                <div className="text-base font-semibold text-text-primary mb-1">
                   {orderData.product.icon} {orderData.product.name}
                 </div>
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-text-secondary">
                   Color: {orderData.color.name} | Size: {orderData.size} | Qty: {orderData.quantity}
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-4 space-y-2 text-sm">
-                <div className="flex justify-between text-gray-600">
+              <div className="border-t border-bg-card-light pt-4 space-y-2 text-sm">
+                <div className="flex justify-between text-text-secondary">
                   <span>Subtotal</span>
                   <span>${orderData.totalPrice}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-text-secondary">
                   <span>Shipping</span>
-                  <span className="text-green-600 font-medium">Free</span>
+                  <span className="text-green-400 font-medium">Free</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-text-secondary">
                   <span>Tax</span>
                   <span>${(parseFloat(orderData.totalPrice) * 0.1).toFixed(2)}</span>
                 </div>
-                <div className="border-t border-gray-200 pt-3 flex justify-between text-base font-bold text-gray-900">
+                <div className="border-t border-bg-card-light pt-3 flex justify-between text-base font-bold text-text-primary">
                   <span>Total</span>
                   <span>${(parseFloat(orderData.totalPrice) * 1.1).toFixed(2)}</span>
                 </div>
               </div>
 
-              <div className="mt-4 bg-blue-50 rounded-lg p-3 border border-blue-200">
-                <p className="text-[11px] text-blue-800"><strong>🔒 Secure:</strong> Payment info is encrypted.</p>
+              <div className="mt-4 bg-bg-card-light/50 rounded-lg p-3 border border-bg-card-light">
+                <p className="text-[11px] text-text-secondary"><strong>🔒 Secure:</strong> Payment info is encrypted.</p>
               </div>
             </Card>
           </div>
