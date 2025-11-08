@@ -17,6 +17,7 @@ export default function Discover() {
 	const [currentCreatorIndex, setCurrentCreatorIndex] = useState(0);
 	const trendingScrollRef = useRef(null);
 	const creatorsScrollRef = useRef(null);
+	const videoRefs = useRef([]);
 	const router = useRouter();
 
 	const scroll = (ref, direction) => {
@@ -220,28 +221,58 @@ export default function Discover() {
 		return views.toString();
 	};
 
+	// Play videos when they mount and handle autoplay
+	React.useEffect(() => {
+		console.log('Trending videos loaded:', trendingVideos.length);
+		trendingVideos.forEach((v, i) => {
+			console.log(`Video ${i} URL:`, v.url, 'ends with .mp4?', v.url?.endsWith('.mp4'));
+		});
+
+		// Attempt to play all videos immediately
+		const playVideos = () => {
+			console.log('Attempting to play', videoRefs.current.length, 'videos');
+			videoRefs.current.forEach((video, index) => {
+				if (video) {
+					console.log(`Playing video ${index}:`, video.src);
+					video.muted = true;
+					video.play()
+						.then(() => console.log(`Video ${index} playing`))
+						.catch((err) => console.log(`Video ${index} autoplay failed:`, err.message));
+				}
+			});
+		};
+
+		if (trendingVideos.length > 0) {
+			setTimeout(playVideos, 500);
+		}
+	}, [trendingVideos]);
+
 	// Autoplay functionality for trending videos
 	React.useEffect(() => {
+		if (trendingVideos.length === 0) return;
+
 		const interval = setInterval(() => {
-			if (trendingScrollRef.current) {
-				const maxSlides = trendingVideos.length;
-				const nextSlide = (currentSlide + 1) % maxSlides;
-				setCurrentSlide(nextSlide);
+			setCurrentSlide((prev) => {
+				const nextSlide = (prev + 1) % trendingVideos.length;
+				
+				if (trendingScrollRef.current) {
+					// Calculate scroll position based on card width
+					const cardWidth = 315; // w-[315px]
+					const gap = 24; // gap-6 = 24px
+					const scrollPosition = nextSlide * (cardWidth + gap);
 
-				// Scroll to next video
-				const scrollWidth = trendingScrollRef.current.scrollWidth;
-				const containerWidth = trendingScrollRef.current.clientWidth;
-				const scrollPosition = (scrollWidth / maxSlides) * nextSlide;
-
-				trendingScrollRef.current.scrollTo({
-					left: scrollPosition,
-					behavior: 'smooth',
-				});
-			}
-		}, 4000); // Change video every 4 seconds
+					trendingScrollRef.current.scrollTo({
+						left: scrollPosition,
+						behavior: 'smooth',
+					});
+				}
+				
+				return nextSlide;
+			});
+		}, 5000); // Change video every 5 seconds
 
 		return () => clearInterval(interval);
-	}, [currentSlide, trendingVideos.length]);
+	}, [trendingVideos.length]);
 
 	// Auto-scroll through creators
 	React.useEffect(() => {
@@ -335,22 +366,33 @@ export default function Discover() {
 										ref={trendingScrollRef}
 										className="flex gap-6 overflow-x-auto pb-4 -mx-2 px-2 scrollbar-hide"
 									>
-										{trendingVideos.map((video) => (
+										{trendingVideos.map((video, index) => (
 											<Link
 												key={video.id}
 												href={`/?video=${video.id}`}
 												className="group flex-shrink-0"
 											>
 												<div className="relative w-[315px] h-[560px] rounded-2xl overflow-hidden bg-bg-card shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
-													{video.thumbnail &&
-													video.thumbnail.endsWith('.mp4') ? (
+													{video.url &&
+													video.url.endsWith('.mp4') ? (
 														<video
-															src={video.thumbnail}
+															ref={(el) => {
+																videoRefs.current[index] = el;
+																if (el) {
+																	el.muted = true;
+																	el.play().catch(() => {});
+																}
+															}}
+															src={video.url}
 															className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-all duration-300"
 															muted
 															loop
 															autoPlay
 															playsInline
+															onLoadedData={(e) => {
+																e.target.muted = true;
+																e.target.play().catch(() => {});
+															}}
 														/>
 													) : (
 														<img
@@ -419,10 +461,10 @@ export default function Discover() {
 												</div>
 												<div className="flex-1 relative">
 													<div className="relative inline-block">
+														<div className="absolute inset-0 bg-accent-orange/15 rounded-full transform scale-110"></div>
 														<div className="text-xl font-bold text-white mb-0.5 relative z-10">
 															{creator.name}
 														</div>
-														<div className="absolute -bottom-1 left-0 right-0 h-2 bg-accent-orange/40 rounded-full transform scale-x-110"></div>
 													</div>
 													<div className="text-sm text-white/90 relative z-10 mt-1">
 														{creator.bio}
