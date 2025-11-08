@@ -1,6 +1,8 @@
 // pages/api/generate-merch.js
 import { generateImageFromPrompt } from '../../lib/gemini';
 import { generateImageWithOpenAI } from '../../lib/openai';
+import fs from 'fs'
+import path from 'path'
 
 // Small helper to normalize product into types we care about
 function normalizeProductType(name) {
@@ -133,31 +135,63 @@ export default async function handler(req, res) {
   }
 
   try {
-    const productName = (product?.name ?? 't-shirt').toLowerCase();
-    const colorName   = (color?.name ?? 'white').toLowerCase();
-    const userEdit    = (prompt ?? '').trim();
+  const productName = (product?.name ?? 't-shirt').toLowerCase();
+  const colorName   = (color?.name ?? 'white').toLowerCase();
+  const userEdit    = (prompt ?? '').trim();
+  const productType = normalizeProductType(productName)
 
     // Extract clean base64
     const mimeMatch = capturedFrame.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,(.+)$/);
     const mime = mimeMatch ? mimeMatch[1] : 'image/png';
     const base64 = mimeMatch ? mimeMatch[2] : capturedFrame.replace(/\s+/g, '');
 
-    // Build merch-specific prompt (hoodie / poster / cup / t-shirt)
-    const textPrompt = buildMerchPrompt({ productName, colorName, userEdit });
+  // Build merch-specific prompt (hoodie / poster / cup / t-shirt)
+  const textPrompt = buildMerchPrompt({ productName, colorName, userEdit });
+
+    // Prepare images payload. Always include the captured frame first.
+    const images = [{ mimeType: mime, data: base64 }]
+
+    // Try to attach a local product template (hoodie / tshirt / cup / poster) so the model can composite
+    try {
+      const templateFiles = {
+        'hoodie': { folder: 'hoodie', file: 'hoodie-white.png' },
+        't-shirt': { folder: 'tshirt', file: 'tshirt-white.png' },
+        'poster': { folder: 'poster', file: 'poster-white.png' },
+        'mug': { folder: 'cup', file: 'cup-white.png' },
+      }
+
+      const tplInfo = templateFiles[productType]
+      if (tplInfo) {
+        const templatePath = path.join(process.cwd(), 'public', 'images', tplInfo.folder, tplInfo.file)
+        if (fs.existsSync(templatePath)) {
+          const tpl = fs.readFileSync(templatePath)
+          images.push({ mimeType: 'image/png', data: tpl.toString('base64') })
+        } else {
+          console.warn('[Merch API] Template not found:', templatePath)
+        }
+      }
+    } catch (e) {
+      console.warn('[Merch API] Could not attach product template:', e.message)
+    }
+
+    // If we attached a template (e.g., hoodie) inform the model explicitly how to use the images
+    let finalPrompt = textPrompt
+    if (images.length > 1) {
+      const tplName = productType === 't-shirt' ? 't-shirt template' : `${productType} template`
+      finalPrompt += `\n\nATTN: You have been given two inline images. The FIRST is the design to print. The SECOND is a ${tplName} image. Composite the FIRST image onto the SECOND image as a realistic print on the product (follow fabric folds, curvature, shadows, and seams as applicable). Do NOT output a separated artwork — output a finished product photo. Remove any hard rectangular borders; blend edges naturally.`
+    }
 
     let result;
     if (provider === 'gemini') {
-      result = await generateImageFromPrompt(textPrompt, [
-        { mimeType: mime, data: base64 },
-      ]);
+      result = await generateImageFromPrompt(finalPrompt, images)
     } else {
       result = await generateImageWithOpenAI(
-        textPrompt,
-        [{ mimeType: mime, data: base64 }],
+        finalPrompt,
+        images,
         model,
         size,
         { quality: 'hd', style: 'vivid' }
-      );
+      )
     }
 
     return res.status(200).json(result);

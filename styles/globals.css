@@ -70,3 +70,13 @@ a {
 .ring-accent-orange { --tw-ring-color: var(--color-accent-orange); }
 .ring-offset-bg-card { --tw-ring-offset-color: var(--color-bg-card); }
 
+/* Improved hoodie design */
+.hoodie-design {
+  background: linear-gradient(to bottom, #1E3A8A, #212121);
+  border: 2px solid var(--color-accent-orange);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+}
+
