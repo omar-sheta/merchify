@@ -7,6 +7,7 @@ import { auth } from '../lib/firebase'
 
 export default function Login() {
   const router = useRouter()
+  const { returnUrl } = router.query
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -19,7 +20,7 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      router.push('/')
+      router.push(returnUrl || '/')
     } catch (err) {
       console.error('Login error:', err)
       if (err.code === 'auth/invalid-credential') {
@@ -43,7 +44,7 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider()
       await signInWithPopup(auth, provider)
-      router.push('/')
+      router.push(returnUrl || '/')
     } catch (err) {
       console.error('Google login error:', err)
       setError(err.message)

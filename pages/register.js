@@ -7,6 +7,7 @@ import { auth } from '../lib/firebase'
 
 export default function Register() {
   const router = useRouter()
+  const { returnUrl } = router.query
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -36,7 +37,7 @@ export default function Register() {
       await updateProfile(userCredential.user, {
         displayName: name
       })
-      router.push('/')
+      router.push(returnUrl || '/')
     } catch (err) {
       console.error('Registration error:', err)
       if (err.code === 'auth/email-already-in-use') {
@@ -60,7 +61,7 @@ export default function Register() {
     try {
       const provider = new GoogleAuthProvider()
       await signInWithPopup(auth, provider)
-      router.push('/')
+      router.push(returnUrl || '/')
     } catch (err) {
       console.error('Google registration error:', err)
       setError(err.message)
