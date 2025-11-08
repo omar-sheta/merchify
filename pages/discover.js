@@ -364,7 +364,7 @@ export default function Discover() {
 
 					<div className="w-full px-8 pb-10">
 						<div className="max-w-[1600px] mx-auto">
-							<h1 className="text-3xl font-bold text-text-primary mb-8">
+							<h1 className="text-3xl font-bold text-text-primary mb-8 text-center">
 								Discover Creators
 							</h1>
 							{creators.length === 0 ? (
@@ -372,11 +372,11 @@ export default function Discover() {
 									No creators available yet
 								</div>
 							) : (
-								<div className="flex gap-8 overflow-x-auto pb-4 scrollbar-hide">
+								<div className="flex gap-8 overflow-x-scroll pb-4 px-4 justify-start items-start snap-x snap-mandatory">
 									{creators.map((creator) => (
 										<Card
 											key={creator.id}
-											className="w-[400px] flex-shrink-0 p-6 flex flex-col gap-4"
+											className="w-[400px] flex-shrink-0 p-6 flex flex-col gap-4 snap-center"
 										>
 											<div className="flex items-center gap-4">
 												<img
