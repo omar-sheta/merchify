@@ -1,120 +1,115 @@
-// pages/api/generate-merch.js
+// pages/api/generate-image.js
 import { generateImageFromPrompt } from '../../lib/gemini';
 import { generateImageWithOpenAI } from '../../lib/openai';
-import fs from 'fs'
-import path from 'path'
+import fs from 'fs';
+import path from 'path';
 
-// Small helper to normalize product into types we care about
-function normalizeProductType(name) {
-  const n = (name || '').toLowerCase();
+/* ----------------------------- Color Mapping ----------------------------- */
+const COLORS = {
+  // UI color choices (matching customize.js)
+  'white': '#FFFFFF',
+  'black': '#212121',
+  'navy': '#1E3A8A',
+  'red': '#DC2626',
+  // Additional descriptive color names
+  'nano banana': '#FFE135',
+  'banana': '#FFE135',
+  'midnight sky': '#0A2540',
+  'forest mist': '#A8DADC',
+  'cream': '#F5F1E6',
+  'ash': '#D6D6D6',
+  'charcoal': '#333333',
+  'blue': '#0000FF',
+};
 
-  if (n.includes('hoodie')) return 'hoodie';
-  if (n.includes('poster')) return 'poster';
-  if (n.includes('cup') || n.includes('mug')) return 'mug';
-  if (n.includes('t-shirt') || n.includes('tshirt') || n.includes('tee')) return 't-shirt';
-
-  // default
-  return 't-shirt';
+function getColorHex(colorName = 'white') {
+  const key = String(colorName || '').trim().toLowerCase();
+  return COLORS[key] || '#FFFFFF';
 }
 
-function buildMerchPrompt({ productName, colorName, userEdit }) {
-  const productType = normalizeProductType(productName);
+/* --------------------------- Product Mapping -------------------------- */
+const PRODUCT_CONFIG = {
+  'hoodie': { type: 'hoodie', folder: 'hoodie', prefix: 'hoodie', aspect: '1:1' },
+  't-shirt': { type: 't-shirt', folder: 'tshirt', prefix: 'tshirt', aspect: '1:1' },
+  'poster': { type: 'poster', folder: 'poster', prefix: 'poster', aspect: '3:4' },
+  'mug': { type: 'mug', folder: 'cup', prefix: 'cup', aspect: '4:3' },
+};
 
-  let baseProductBlock = '';
-  let printBlock = '';
-  let lightingBlock = '';
-  let extraNotes = '';
+function getProductConfig(name) {
+  const n = (name || '').toLowerCase().trim();
+  if (n.includes('hoodie')) return PRODUCT_CONFIG['hoodie'];
+  if (n.includes('poster')) return PRODUCT_CONFIG['poster'];
+  if (n.includes('cup') || n.includes('mug')) return PRODUCT_CONFIG['mug'];
+  return PRODUCT_CONFIG['t-shirt'];
+}
 
+function getColorVariant(colorName = 'white') {
+  const raw = String(colorName || '').toLowerCase().trim();
+  // Direct mapping for UI color choices
+  if (raw === 'black') return 'black';
+  if (raw === 'navy') return 'navy';
+  if (raw === 'red') return 'red';
+  if (raw === 'white') return 'white';
+  
+  // Fallback: search for keywords in case color name is descriptive
+  if (raw.includes('black') || raw.includes('charcoal')) return 'black';
+  if (raw.includes('navy') || raw.includes('midnight')) return 'navy';
+  if (raw.includes('red')) return 'red';
+  
+  // Default to white for unknown or light colors
+  return 'white';
+}
+
+/* ----------------------------- Optimized Prompt Builder ---------------------------- */
+function buildPrompt(productType, colorHex, userPrompt) {
+  const hasCustomPrompt = userPrompt && userPrompt.trim().length > 0;
+  const presenterRule = `\n**PRESERVE PRESENTER**\n- Do not remove, crop out, or replace the main presenter(s) appearing in Image 1. Keep the full body/face and context intact.\n- If the user's instruction explicitly says "caption only" or "take caption", then extract only the caption text/graphic from Image 1 and use that as the design; otherwise use the whole frame as-is.`;
+  
+  // Simplified, focused prompt for better reliability
   if (productType === 't-shirt' || productType === 'hoodie') {
-    baseProductBlock = `
-Create a **photorealistic, studio-quality e-commerce product photo** of a **${colorName} ${productName}** on an invisible mannequin or neatly arranged flat lay.`;
-    printBlock = `
-**PRINTED DESIGN (APPAREL):**
-- Use the **exact image provided** as the base graphic.
-- **Apply this edit to the design before printing:** "${userEdit || 'keep original'}"
-  - If the edit describes a style (e.g., "anime", "cartoon"), convert the design fully into that style.
-  - If the edit describes colors (e.g., "neon palette", "red tones"), recolor the design accordingly.
-  - If the edit describes effects (e.g., "add sparkles", "comic halftone"), apply them to the design.
-  - If the edit is empty, keep the original design as is.
-- Place the design centered on the chest area.
-- The print must **follow every fabric fold, wrinkle, and contour**.
-- Use **realistic textile printing**: slight ink absorption, subtle texture, and soft edges.
-- Edges should **blend naturally into seams** — absolutely **no hard rectangular edges** or stickers.
-- On darker fabrics, slightly deepen and desaturate the print so it looks realistic.`;
-    lightingBlock = `
-**LIGHTING & COMPOSITION (APPAREL):**
-- Soft, diffused key light from 45° above.
-- Clean neutral background (white or light gray).
-- Subtle floor shadow under the garment to ground it.
-- Slight depth-of-field blur, but keep the product fully sharp.
-- Center the product with room for cropping on all sides.`;
-    extraNotes = `
-**NO ARTIFACTS:**
-- No watermarks, no logos, no placeholder text.
-- No AI glitches, no floating prints, no clipping.`;
-  } else if (productType === 'poster') {
-    baseProductBlock = `
-Create a **photorealistic, studio-quality product photo** of a **${colorName} poster** hanging on a wall or standing in a simple frame.`;
-    printBlock = `
-**PRINTED DESIGN (POSTER):**
-- Use the **exact image provided** as the central artwork.
-- **Apply this edit to the artwork before printing:** "${userEdit || 'keep original'}"
-  - Style → convert entirely (e.g., "minimalist line art", "comic style").
-  - Color → recolor palette.
-  - Effects → add to the artwork.
-- The artwork should be perfectly flat and sharp.
-- Maintain crisp edges, no fabric folds or textile texture.
-- Slight paper or print gloss is allowed, but no glare that hides the design.`;
-    lightingBlock = `
-**LIGHTING & COMPOSITION (POSTER):**
-- Soft, even lighting across the poster.
-- Neutral, modern background wall (white, light gray, or subtle interior).
-- Slight shadow around the poster to show depth.
-- Front-facing camera angle, minimal distortion.`;
-    extraNotes = `
-**NO ARTIFACTS:**
-- No extra text, logos, or watermarks.
-- No hands, no people unless explicitly implied.
-- No mockup placeholders.`;
-  } else {
-    // mug / cup
-    baseProductBlock = `
-Create a **photorealistic, studio-quality product photo** of a **${colorName} ceramic mug** on a clean surface.`;
-    printBlock = `
-**PRINTED DESIGN (MUG/CUP):**
-- Use the **exact image provided** as the main printed graphic.
-- **Apply this edit to the design before printing:** "${userEdit || 'keep original'}"
-  - Style edits → restyle the art.
-  - Color edits → recolor palette.
-  - Effect edits → apply to the graphic.
-- Place the graphic on the side of the mug facing the camera.
-- The design must **wrap naturally around the curved surface** of the mug.
-- Respect reflections and highlights; the print should look integrated, not pasted.
-- No hard rectangular bounding box; blend edges slightly with the mug surface.`;
-    lightingBlock = `
-**LIGHTING & COMPOSITION (MUG/CUP):**
-- Soft studio lighting from 45° above.
-- Neutral background (e.g., light gray or soft gradient).
-- A subtle shadow on the surface under the mug.
-- Focus on the mug with shallow depth of field for the background.`;
-    extraNotes = `
-**NO ARTIFACTS:**
-- No watermarks, logos, or text overlays.
-- No visible seams around the print.
-- No double handles, distorted shapes, or extra mugs unless clearly intentional.`;
+  return (`Create a photorealistic product mockup: Take Image 1 (the design) ${hasCustomPrompt ? `and apply this style: "${userPrompt}". Then c` : 'and c'}omposite it onto Image 2 (the ${productType} template).
+
+CRITICAL REQUIREMENTS:
+1. Use Image 2 exactly as provided - do NOT change its color, it's already the correct color
+2. Place the design from Image 1 centered on the chest area
+3. Make the print look realistic - it should follow fabric contours naturally like DTG printing
+4. Keep metal details (zippers, eyelets) in their original metallic finish
+5. Studio lighting: soft, professional, no harsh shadows
+6. Clean background, single product shot only
+
+Output: One complete, photorealistic e-commerce product image.` + presenterRule);
   }
+  
+  if (productType === 'poster') {
+  return (`Create a photorealistic product mockup: Take Image 1 (the design) ${hasCustomPrompt ? `and apply this style: "${userPrompt}". Then c` : 'and c'}omposite it onto Image 2 (the poster template).
 
-  return `
-${baseProductBlock}
+CRITICAL REQUIREMENTS:
+1. Use Image 2 exactly as provided - do NOT change the frame/border color, it's already correct
+2. Place design from Image 1 as the central artwork on the poster
+3. Flat, crisp presentation with subtle paper texture
+4. Gallery-style lighting, no glare
+5. Clean wall background
 
-${printBlock}
+Output: One complete poster product image in portrait orientation.` + presenterRule);
+  }
+  
+  if (productType === 'mug') {
+  return (`Create a photorealistic product mockup: Take Image 1 (the design) ${hasCustomPrompt ? `and apply this style: "${userPrompt}". Then c` : 'and c'}omposite it onto Image 2 (the mug template).
 
-${lightingBlock}
+CRITICAL REQUIREMENTS:
+1. Use Image 2 exactly as provided - do NOT change its color, it's already the correct color
+2. Wrap design from Image 1 around the visible mug surface naturally
+3. Maintain ceramic glaze reflections and highlights
+4. Professional product photography lighting
+5. Clean background with subtle shadow
 
-${extraNotes}
-`.trim();
+Output: One complete mug product image.` + presenterRule);
+  }
+  
+  return (`Create a photorealistic ${productType} mockup with design from Image 1 on template Image 2. Use Image 2 as-is without color changes.` + presenterRule);
 }
 
+/* --------------------------------- API Handler -------------------------------- */
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -124,119 +119,129 @@ export default async function handler(req, res) {
     capturedFrame,
     product,
     color,
-    prompt,
-    provider = 'gemini',
-    model = 'dall-e-3',
-    size = '1024x1024',
+    prompt: userPrompt,
+    provider = 'gemini', // Default to Gemini
   } = req.body ?? {};
 
+  // Validation
   if (!capturedFrame || typeof capturedFrame !== 'string') {
-    return res.status(400).json({ error: 'Missing captured frame' });
+    return res.status(400).json({ error: 'Missing or invalid captured frame' });
   }
 
   try {
-  const productName = (product?.name ?? 't-shirt').toLowerCase();
-  const colorName   = (color?.name ?? 'white').toLowerCase();
-  const userEdit    = (prompt ?? '').trim();
-  const productType = normalizeProductType(productName)
+    // Extract product info
+    const productName = (product?.name ?? 't-shirt').toLowerCase().trim();
+    const colorName = (color?.name ?? 'white').toLowerCase().trim();
+    const config = getProductConfig(productName);
+    const colorHex = getColorHex(colorName);
 
-    // Extract clean base64
-    const mimeMatch = capturedFrame.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,(.+)$/);
-    const mime = mimeMatch ? mimeMatch[1] : 'image/png';
-    const base64 = mimeMatch ? mimeMatch[2] : capturedFrame.replace(/\s+/g, '');
+    console.log('[Merch API] Generating:', {
+      product: config.type,
+      color: colorName,
+      hex: colorHex,
+      hasPrompt: !!(userPrompt && userPrompt.trim()),
+      provider,
+    });
 
-  // Build merch-specific prompt (hoodie / poster / cup / t-shirt)
-  const textPrompt = buildMerchPrompt({ productName, colorName, userEdit });
+    // Parse frame image
+    const frameMatch = capturedFrame.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,(.+)$/);
+    const frameMime = frameMatch ? frameMatch[1] : 'image/png';
+    const frameBase64 = frameMatch ? frameMatch[2] : capturedFrame.replace(/\s+/g, '');
 
-    // Prepare images payload. Always include the captured frame first.
-    const images = [{ mimeType: mime, data: base64 }]
-
-    // Try to attach a local product template (hoodie / tshirt / cup / poster) so the model can composite
-    try {
-      const templateFiles = {
-        'hoodie': { folder: 'hoodie', file: 'hoodie-white.png' },
-        't-shirt': { folder: 'tshirt', file: 'tshirt-white.png' },
-        'poster': { folder: 'poster', file: 'poster-white.png' },
-        'mug': { folder: 'cup', file: 'cup-white.png' },
-      }
-
-      const tplInfo = templateFiles[productType]
-      if (tplInfo) {
-        const templatePath = path.join(process.cwd(), 'public', 'images', tplInfo.folder, tplInfo.file)
+    // Build images array: [frame, template]
+    const images = [{ mimeType: frameMime, data: frameBase64 }];
+    
+    // Determine template variant based on color and load template when available
+    const variant = getColorVariant(colorName);
+    let templateLoaded = false;
+    let templateRelativePath = null;
+    
+    console.log('[Merch API] Color mapping:', {
+      requested: colorName,
+      variant,
+      hex: colorHex,
+    });
+    
+    if (provider === 'gemini' && config.folder && config.prefix) {
+      try {
+        templateRelativePath = path.join(config.folder, `${config.prefix}-${variant}.png`);
+        const templatePath = path.join(process.cwd(), 'public', 'images', templateRelativePath);
         if (fs.existsSync(templatePath)) {
-          const tpl = fs.readFileSync(templatePath)
-          images.push({ mimeType: 'image/png', data: tpl.toString('base64') })
+          const templateData = fs.readFileSync(templatePath, 'base64');
+          images.push({ mimeType: 'image/png', data: templateData });
+          templateLoaded = true;
+          console.log('[Merch API] Template loaded:', templateRelativePath);
         } else {
-          console.warn('[Merch API] Template not found:', templatePath)
+          console.warn('[Merch API] Template not found:', templatePath);
         }
+      } catch (err) {
+        console.error('[Merch API] Template load error:', err.message);
       }
-    } catch (e) {
-      console.warn('[Merch API] Could not attach product template:', e.message)
     }
 
-    // If we attached a template (e.g., hoodie) inform the model explicitly how to use the images
-    let finalPrompt = textPrompt
-    if (images.length > 1) {
-      const tplName = productType === 't-shirt' ? 't-shirt template' : `${productType} template`
-      finalPrompt += `\n\nATTN: You have been given two inline images. The FIRST is the design to print. The SECOND is a ${tplName} image. Composite the FIRST image onto the SECOND image as a realistic print on the product (follow fabric folds, curvature, shadows, and seams as applicable). Do NOT output a separated artwork — output a finished product photo. Remove any hard rectangular borders; blend edges naturally.`
-    }
+    // Build prompt
+    const finalPrompt = buildPrompt(config.type, colorHex, userPrompt?.trim() || '');
+    console.log('[Merch API] Prompt length:', finalPrompt.length, 'chars');
 
-    // Choose an aspect ratio appropriate for the product/template so the model can output a compatible image
-    const aspectMap = {
-      hoodie: '1:1',       // square works fine for most apparel mockups
-      't-shirt': '1:1',
-      poster: '3:4',       // portrait poster
-      mug: '4:3',          // slightly rectangular to allow wrap
-    }
-    const aspectRatio = aspectMap[productType] || '1:1'
+    // Generate with retries
+    let result = null;
+    const maxAttempts = 2;
+    
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      console.log(`[Merch API] Attempt ${attempt}/${maxAttempts}`);
+      
+      if (provider === 'gemini') {
+        // Use template if loaded, otherwise just the frame
+        const imagesToSend = templateLoaded ? images : [images[0]];
+        result = await generateImageFromPrompt(finalPrompt, imagesToSend, { 
+          aspectRatio: config.aspect 
+        });
+      } else {
+        // OpenAI fallback (no template support)
+        const openaiSize = config.aspect === '3:4' ? '1024x1792' : 
+                          config.aspect === '4:3' ? '1792x1024' : '1024x1024';
+        result = await generateImageWithOpenAI(
+          finalPrompt,
+          [],
+          'dall-e-3',
+          openaiSize,
+          { quality: 'hd', style: 'vivid' }
+        );
+      }
 
-    let result;
-    if (provider === 'gemini') {
-      // Primary attempt with full prompt and chosen aspect
-      result = await generateImageFromPrompt(finalPrompt, images, { aspectRatio })
-
-      // If Gemini returned no image, retry with a much shorter explicit prompt and alternate aspect ratios
-      const needRetry = !result?.success && result?.error && /no image/i.test(String(result.error))
-      if (needRetry || !result?.success) {
-        console.warn('[Merch API] Gemini returned no image, retrying with simplified prompt/aspect...')
-
-        const simplifiedPrompt = `Composite the FIRST inline image (design) onto the SECOND inline image (product template) as a photorealistic finished product photo. Center the design on the product and follow folds, curvature, and shadows. No watermarks, no text.`
-
-        // Try a small set of fallback aspect ratios (poster may need 2:3 or 3:4 etc.)
-        const fallbackAspects = [aspectRatio]
-        if (productType === 'poster') fallbackAspects.push('2:3', '4:5')
-        if (productType === 'mug') fallbackAspects.push('4:3', '3:2')
-        if (productType === 't-shirt' || productType === 'hoodie') fallbackAspects.push('1:1')
-
-        for (const asp of fallbackAspects) {
-          try {
-            const attempt = await generateImageFromPrompt(simplifiedPrompt, images, { aspectRatio: asp })
-            if (attempt?.success) {
-              result = attempt
-              break
-            }
-          } catch (e) {
-            console.warn('[Merch API] retry attempt failed:', e?.message)
+      if (result?.success && result?.imageUrl) {
+        console.log('[Merch API] ✓ Success on attempt', attempt);
+        return res.status(200).json({
+          success: true,
+          imageUrl: result.imageUrl,
+          metadata: {
+            product: config.type,
+            color: colorName,
+            colorVariant: variant,
+            template: templateRelativePath,
+            provider,
+            attempt,
           }
-        }
+        });
       }
-    } else {
-      // For non-gemini providers, pass size through as before (model/size may control output dims)
-      result = await generateImageWithOpenAI(
-        finalPrompt,
-        images,
-        model,
-        size,
-        { quality: 'hd', style: 'vivid', aspectRatio }
-      )
+
+      console.warn(`[Merch API] Attempt ${attempt} failed:`, result?.error || 'No image');
+      
+      // Wait before retry
+      if (attempt < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
 
-    return res.status(200).json(result);
+    // All attempts failed
+    throw new Error(result?.error || 'Failed to generate image after retries');
+
   } catch (err) {
-    console.error('[Merch API] Error:', err);
+    console.error('[Merch API] FATAL:', err);
     return res.status(500).json({
+      success: false,
       error: err?.message || 'Generation failed',
-      imageUrl: 'https://via.placeholder.com/600x600.png?text=Error',
+      imageUrl: 'https://via.placeholder.com/1024x1024.png?text=Error',
     });
   }
 }

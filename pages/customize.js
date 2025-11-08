@@ -104,10 +104,10 @@ export default function Customize() {
   const defaultPrompt = "Blend the captured frame into the product design, ensuring it complements the product's shape and style. Add subtle enhancements to make it visually appealing and professional.";
 
   const products = [
-    { id: 'tshirt', name: 'T-Shirt', price: 24.99, icon: '👕', prompt: "Integrate the frame into the center of the T-shirt with a modern graphic overlay. Use clean lines and a balanced layout to make it look like a premium design." },
-    { id: 'hoodie', name: 'Hoodie', price: 44.99, icon: '🧥', prompt: "Embed the frame into the hoodie design, ensuring it aligns with the front panel. Add a soft gradient or texture to enhance the overall aesthetic." },
-    { id: 'mug', name: 'Mug', price: 14.99, icon: '☕', prompt: "Wrap the frame around the mug, ensuring it fits naturally with the curvature. Add a subtle border or shadow to make it stand out." },
-    { id: 'poster', name: 'Poster', price: 19.99, icon: '🖼️', prompt: "Center the frame on the poster with a high-quality finish. Add a complementary background or artistic effects to make it look like a gallery piece." },
+    { id: 'tshirt', name: 'T-Shirt', price: 24.99, prompt: "Integrate the frame into the center of the T-shirt with a modern graphic overlay. Use clean lines and a balanced layout to make it look like a premium design." },
+    { id: 'hoodie', name: 'Hoodie', price: 44.99, prompt: "Embed the frame into the hoodie design, ensuring it aligns with the front panel. Add a soft gradient or texture to enhance the overall aesthetic." },
+    { id: 'mug', name: 'Mug', price: 14.99, prompt: "Wrap the frame around the mug, ensuring it fits naturally with the curvature. Add a subtle border or shadow to make it stand out." },
+    { id: 'poster', name: 'Poster', price: 19.99, prompt: "Center the frame on the poster with a high-quality finish. Add a complementary background or artistic effects to make it look like a gallery piece." },
   ]
 
   const colors = [
@@ -237,7 +237,6 @@ export default function Customize() {
                 </div>
               ) : (
                 <div className="text-center">
-                  <div className="text-6xl mb-4">{selectedProductData.icon}</div>
                   <p className="text-text-primary font-medium mb-4">{selectedProductData.name} - {colors.find(c => c.id === selectedColor).name}</p>
                   <img 
                     src={capturedFrame} 
@@ -346,13 +345,52 @@ export default function Customize() {
               </div>
             </div>
 
+            {/* Style Presets */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-text-secondary mb-4 uppercase tracking-wide">Quick Style Presets</h3>
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  onClick={() => setPrompt('Anime style with expressive eyes, vibrant colors, cel-shading, dynamic poses, and Japanese manga aesthetics')}
+                  className="group relative overflow-hidden rounded-xl border-2 border-bg-card-light hover:border-accent-orange transition-all p-4 bg-gradient-to-br from-pink-500/20 to-purple-500/20"
+                >
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">🎌</div>
+                    <div className="text-sm font-bold text-text-primary">Anime</div>
+                    <div className="text-xs text-text-secondary mt-1">Japanese Style</div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => setPrompt('Retro vintage 80s style with warm nostalgic colors, neon accents, synthwave aesthetics, and classic typography')}
+                  className="group relative overflow-hidden rounded-xl border-2 border-bg-card-light hover:border-accent-orange transition-all p-4 bg-gradient-to-br from-orange-500/20 to-yellow-500/20"
+                >
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">🕹️</div>
+                    <div className="text-sm font-bold text-text-primary">Retro</div>
+                    <div className="text-xs text-text-secondary mt-1">Vintage 80s</div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => setPrompt('Graffiti street art style with bold spray paint effects, urban aesthetics, vibrant colors, and edgy graphics')}
+                  className="group relative overflow-hidden rounded-xl border-2 border-bg-card-light hover:border-accent-orange transition-all p-4 bg-gradient-to-br from-red-500/20 to-orange-500/20"
+                >
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">🎨</div>
+                    <div className="text-sm font-bold text-text-primary">Graffiti</div>
+                    <div className="text-xs text-text-secondary mt-1">Street Art</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
             {/* Prompt for designer / AI */}
             <div className="mb-8">
-              <h3 className="text-sm font-semibold text-text-secondary mb-4 uppercase tracking-wide">Prompt for AI Designer</h3>
+              <h3 className="text-sm font-semibold text-text-secondary mb-4 uppercase tracking-wide">Custom Prompt (Optional)</h3>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g. Retro pop art, center the face..."
+                placeholder="Or write your own custom style instructions..."
                 className="w-full px-4 py-3 bg-bg-card border border-bg-card-light rounded-xl focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-colors min-h-[100px] text-text-primary"
               />
             </div>

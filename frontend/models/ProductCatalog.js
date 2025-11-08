@@ -2,10 +2,10 @@
  * Product catalog with available merchandise
  */
 export const PRODUCTS = [
-  { id: 'tshirt', name: 'T-Shirt', price: 24.99, icon: '👕' },
-  { id: 'hoodie', name: 'Hoodie', price: 44.99, icon: '🧥' },
-  { id: 'mug', name: 'Mug', price: 14.99, icon: '☕' },
-  { id: 'poster', name: 'Poster', price: 19.99, icon: '🖼️' },
+  { id: 'tshirt', name: 'T-Shirt', price: 24.99 },
+  { id: 'hoodie', name: 'Hoodie', price: 44.99 },
+  { id: 'mug', name: 'Mug', price: 14.99 },
+  { id: 'poster', name: 'Poster', price: 19.99 },
 ]
 
 /**
