@@ -19,9 +19,9 @@ export default function Button({
     lg: 'text-base px-6 py-3 gap-3'
   }
   const variants = {
-    primary: 'brand-gradient-bg text-white shadow-md hover:shadow-lg hover:brightness-110',
-    secondary: 'bg-white text-gray-800 shadow-sm hover:shadow-md border border-gray-200',
-    subtle: 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+    primary: 'bg-[var(--brand-primary)] text-[#1C1C1C] font-bold shadow-lg hover:bg-[var(--brand-primary-alt)]',
+    secondary: 'bg-[var(--brand-surface-alt)] text-gray-200 shadow-sm hover:bg-[#555] border border-white/10',
+    subtle: 'bg-[var(--brand-surface)] text-gray-300 hover:bg-[var(--brand-surface-alt)] border border-white/10',
     danger: 'bg-red-600 text-white hover:bg-red-700'
   }
   return (

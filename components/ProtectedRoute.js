@@ -3,10 +3,10 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
 
 const LoadingSpinner = () => (
-	<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50">
+	<div className="min-h-screen flex items-center justify-center bg-[var(--brand-bg)]">
 		<div className="text-center">
-			<div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
-			<p className="mt-4 text-gray-600">Loading...</p>
+			<div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#FDE047] border-t-transparent"></div>
+			<p className="mt-4 text-gray-400">Loading...</p>
 		</div>
 	</div>
 );

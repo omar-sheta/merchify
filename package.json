@@ -7,12 +7,10 @@
     "dev:host": "node ./scripts/dev-host.js",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "seed": "node scripts/seed-firebase.js"
+    "lint": "next lint"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
-    "@google/generative-ai": "^0.24.1",
     "@tailwindcss/postcss": "^4.1.17",
     "autoprefixer": "^10.4.21",
     "clsx": "^2.1.1",

@@ -201,7 +201,7 @@ export default function Home() {
   }, [activeVideo?.thumb, activeVideo?.id])
 
   return (
-    <div className="min-h-screen" style={{background: 'var(--brand-bg)'}}>
+  <div className="min-h-screen">
       <Head>
         <title>Merchify — Create Custom Merchandise from Videos</title>
       </Head>
@@ -221,8 +221,8 @@ export default function Home() {
       <section className="max-w-5xl mx-auto px-6 pb-16">
         <Card>
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Play your video</h2>
-            <p className="text-gray-600">Pause at the perfect moment and capture the frame for your merch.</p>
+            <h2 className="text-2xl font-semibold text-gray-100 mb-2">Play your video</h2>
+            <p className="text-gray-400">Pause at the perfect moment and capture the frame for your merch.</p>
           </div>
 
           <div className="relative bg-black rounded-xl overflow-hidden shadow-lg mb-6 border border-black/40">
@@ -270,7 +270,7 @@ export default function Home() {
                 <button
                   key={v.id}
                   onClick={() => setActiveVideo(v)}
-                  className={`flex-shrink-0 w-40 h-24 rounded-lg overflow-hidden border-2 ${activeVideo?.id === v.id ? 'border-blue-500' : 'border-gray-200'}`}
+                  className={`flex-shrink-0 w-40 h-24 rounded-lg overflow-hidden border-2 transition-all ${activeVideo?.id === v.id ? 'border-[var(--brand-primary)] shadow-md' : 'border-white/10 hover:border-white/20'}`}
                   title={v.title}
                 >
                   <img src={v.thumb || v.poster} alt={v.title} className="w-full h-full object-cover bg-black" />
@@ -279,7 +279,7 @@ export default function Home() {
             </div>
           </div>
 
-          <Button onClick={captureFrame} size="lg" className="w-full">
+          <Button onClick={captureFrame} size="lg" variant="primary" className="w-full">
             <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -288,34 +288,34 @@ export default function Home() {
           </Button>
 
           {capturedFrame && (
-            <div className="mt-8 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+            <Card padding="p-6" className="mt-8">
               <div className="flex items-center mb-4">
-                <svg className="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-[var(--brand-primary)] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <h3 className="text-xl font-semibold text-gray-900">Frame Captured!</h3>
+                <h3 className="text-xl font-semibold text-gray-100">Frame Captured!</h3>
               </div>
               
               <div className="mb-6">
-                <img src={capturedFrame} alt="Captured frame" className="w-full max-w-md mx-auto rounded-lg shadow-md border border-gray-200" />
+                <img src={capturedFrame} alt="Captured frame" className="w-full max-w-md mx-auto rounded-lg shadow-md border border-white/10" />
               </div>
 
               <Link 
                 href="/customize"
-                className="inline-flex items-center justify-center w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                className="inline-flex items-center justify-center w-full px-8 py-4 bg-[var(--brand-primary)] text-black font-semibold rounded-xl shadow-lg hover:bg-[var(--brand-primary-alt)] transition-all"
               >
                 Continue to Customize Merchandise
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Link>
-            </div>
+            </Card>
           )}
         </Card>
       </section>
 
       {/* How it Works */}
-      <section className="max-w-6xl mx-auto px-6 pb-24">
+  <section className="max-w-6xl mx-auto px-6 pb-24">
         <SectionHeading
           eyebrow="Simple flow"
           title="From punchline to product in three steps"
@@ -328,30 +328,30 @@ export default function Home() {
               step: '1', 
               title: 'Capture Frame', 
               desc: 'Play your video and capture the perfect moment',
-              color: 'from-purple-500 to-violet-600',
+              color: 'from-yellow-300 to-yellow-500',
               current: true
             },
             { 
               step: '2', 
               title: 'Customize', 
               desc: 'Choose your product and customize the design',
-              color: 'from-violet-500 to-indigo-600',
+              color: 'from-yellow-300 to-yellow-500',
               current: false
             },
             { 
               step: '3', 
               title: 'Checkout', 
               desc: 'Review and complete your order',
-              color: 'from-orange-500 to-amber-600',
+              color: 'from-yellow-300 to-yellow-500',
               current: false
             },
           ].map((item, i) => (
-            <div key={i} className={`relative bg-white rounded-xl p-8 shadow-lg border-2 ${item.current ? 'border-blue-500' : 'border-gray-200'}`}>
-              <div className={`absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br ${item.color} rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
+            <div key={i} className={`relative rounded-xl p-8 shadow-lg border border-white/10 bg-white/5 backdrop-blur ${item.current ? 'ring-2 ring-[var(--brand-primary)]' : ''}`}>
+              <div className={`absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br ${item.color} rounded-full flex items-center justify-center text-black font-bold text-xl shadow-lg`}>
                 {item.step}
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 mt-4">{item.title}</h3>
-              <p className="text-gray-600">{item.desc}</p>
+              <h3 className="text-xl font-semibold text-gray-100 mb-2 mt-4">{item.title}</h3>
+              <p className="text-gray-400">{item.desc}</p>
             </div>
           ))}
         </div>

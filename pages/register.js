@@ -37,7 +37,7 @@ export default function Register() {
       await updateProfile(userCredential.user, {
         displayName: name
       })
-      router.push(returnUrl || '/')
+  router.push(returnUrl || '/discover')
     } catch (err) {
       console.error('Registration error:', err)
       if (err.code === 'auth/email-already-in-use') {
@@ -60,8 +60,8 @@ export default function Register() {
 
     try {
       const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
-      router.push(returnUrl || '/')
+  await signInWithPopup(auth, provider)
+  router.push(returnUrl || '/discover')
     } catch (err) {
       console.error('Google registration error:', err)
       setError(err.message)
@@ -76,31 +76,31 @@ export default function Register() {
         <title>Create Account - Merchify</title>
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-[var(--brand-bg)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-gray-100 mb-2">
               Create Your Account ✨
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-400">
               Start creating custom merch in minutes
             </p>
           </div>
 
           {/* Registration Form */}
-          <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="rounded-2xl shadow-xl p-8 bg-white/5 border border-white/10">
             <form onSubmit={handleEmailRegister} className="space-y-6">
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
                   <p className="text-sm">{error}</p>
                 </div>
               )}
 
               {/* Name Input */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
                   Full Name
                 </label>
                 <input
@@ -110,14 +110,14 @@ export default function Register() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="appearance-none relative block w-full px-4 py-3 bg-white/5 border border-white/10 placeholder-gray-500 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FDE047] focus:border-transparent"
                   placeholder="John Doe"
                 />
               </div>
 
               {/* Email Input */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                   Email Address
                 </label>
                 <input
@@ -127,14 +127,14 @@ export default function Register() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="appearance-none relative block w-full px-4 py-3 bg-white/5 border border-white/10 placeholder-gray-500 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FDE047] focus:border-transparent"
                   placeholder="you@example.com"
                 />
               </div>
 
               {/* Password Input */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
                   Password
                 </label>
                 <input
@@ -144,14 +144,14 @@ export default function Register() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="appearance-none relative block w-full px-4 py-3 bg-white/5 border border-white/10 placeholder-gray-500 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FDE047] focus:border-transparent"
                   placeholder="At least 6 characters"
                 />
               </div>
 
               {/* Confirm Password Input */}
               <div>
-                <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-300 mb-2">
                   Confirm Password
                 </label>
                 <input
@@ -161,7 +161,7 @@ export default function Register() {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="appearance-none relative block w-full px-4 py-3 bg-white/5 border border-white/10 placeholder-gray-500 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FDE047] focus:border-transparent"
                   placeholder="Re-enter password"
                 />
               </div>
@@ -170,7 +170,7 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-[#1C1C1C] bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-alt)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 {loading ? (
                   <span className="flex items-center">
@@ -190,10 +190,10 @@ export default function Register() {
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
+                  <div className="w-full border-t border-white/10"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or sign up with</span>
+                  <span className="px-2 bg-white/5 text-gray-400">Or sign up with</span>
                 </div>
               </div>
             </div>
@@ -202,7 +202,7 @@ export default function Register() {
             <button
               onClick={handleGoogleRegister}
               disabled={loading}
-              className="mt-6 w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-6 w-full flex items-center justify-center px-4 py-3 border border-white/10 rounded-lg shadow-sm bg-white/10 text-gray-100 hover:bg-[var(--brand-surface-alt)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -214,29 +214,29 @@ export default function Register() {
             </button>
 
             {/* Terms */}
-            <p className="mt-4 text-xs text-center text-gray-500">
+            <p className="mt-4 text-xs text-center text-gray-400">
               By creating an account, you agree to our{' '}
-              <Link href="/terms" className="text-purple-600 hover:text-purple-700">
+              <Link href="/terms" className="text-[var(--brand-primary)] hover:text-[var(--brand-primary-alt)]">
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link href="/privacy" className="text-purple-600 hover:text-purple-700">
+              <Link href="/privacy" className="text-[var(--brand-primary)] hover:text-[var(--brand-primary-alt)]">
                 Privacy Policy
               </Link>
             </p>
           </div>
 
           {/* Sign In Link */}
-          <p className="text-center text-gray-600">
+          <p className="text-center text-gray-400">
             Already have an account?{' '}
-            <Link href="/login" className="font-medium text-purple-600 hover:text-purple-700">
+            <Link href="/login" className="font-medium text-[var(--brand-primary)] hover:text-[var(--brand-primary-alt)]">
               Sign in
             </Link>
           </p>
 
           {/* Back to Home */}
           <div className="text-center">
-            <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">
+            <Link href="/" className="text-sm text-gray-500 hover:text-gray-300">
               ← Back to home
             </Link>
           </div>
