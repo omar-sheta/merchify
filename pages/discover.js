@@ -462,7 +462,7 @@ export default function Discover() {
 												<div className="flex-1 relative">
 													<div className="relative inline-block">
 														<div className="absolute inset-0 rounded-full transform scale-110"></div>
-														<div className="text-xl font-bold text-gray-900 mb-0.5 relative z-10">
+														<div className="text-xl font-bold text-gray-900 mb-0.5 relative z-10 montserrat-bold">
 															{creator.name}
 														</div>
 													</div>

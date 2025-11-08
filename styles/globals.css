@@ -36,6 +36,19 @@ a {
   box-sizing: border-box;
 }
 
+.erica-one-regular {
+  font-family: "Erica One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.montserrat-bold {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
 .brand-gradient-text {
   background: linear-gradient(to right, #F46A1F, #FFD338);
   background-clip: text;

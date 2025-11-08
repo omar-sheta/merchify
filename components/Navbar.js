@@ -14,7 +14,7 @@ export default function Navbar() {
           <div className="w-10 h-10 bg-accent-orange rounded-lg flex items-center justify-center text-white font-bold text-2xl">
             J
           </div>
-          <span className="text-xl font-bold text-text-primary">Jokester</span>
+          <span className="text-3xl font-bold text-text-primary erica-one-regular">Jokester</span>
         </Link>
 
         <div className="flex items-center gap-6">
