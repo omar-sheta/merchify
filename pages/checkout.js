@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { saveDesign } from '../lib/firestore'
+import { saveDesign, getDesignById } from '../lib/firestore'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import SectionHeading from '../components/ui/SectionHeading'
 
 export default function Checkout() {
   const router = useRouter()
+  const { design: designId } = router.query
   const [orderData, setOrderData] = useState(null)
   const [formData, setFormData] = useState({
     name: '',
@@ -23,17 +24,49 @@ export default function Checkout() {
   const [savedDesignId, setSavedDesignId] = useState(null)
 
   useEffect(() => {
-    // Load order data from sessionStorage
-    if (typeof window !== 'undefined') {
-      const data = sessionStorage.getItem('orderData')
-      if (!data) {
-        // Redirect back to home if no order data
-        router.push('/')
-      } else {
-        setOrderData(JSON.parse(data))
+    async function loadOrderData() {
+      // Check if we have a design ID in the URL
+      if (designId) {
+        console.log('Loading design from Firestore:', designId)
+        try {
+          const design = await getDesignById(designId)
+          if (design) {
+            // Convert the existing design to order data format
+            setOrderData({
+              videoId: design.videoId,
+              videoSrc: design.videoSrc,
+              capturedFrame: design.capturedFrame,
+              product: design.product,
+              color: design.color,
+              size: design.size,
+              quantity: design.quantity,
+              prompt: design.prompt || '',
+              mockupImage: design.mockupImage,
+              totalPrice: design.totalPrice,
+            })
+            return
+          }
+        } catch (error) {
+          console.error('Error loading design:', error)
+        }
+      }
+
+      // Otherwise, load order data from sessionStorage
+      if (typeof window !== 'undefined') {
+        const data = sessionStorage.getItem('orderData')
+        if (!data) {
+          // Redirect back to home if no order data and no design ID
+          router.push('/')
+        } else {
+          setOrderData(JSON.parse(data))
+        }
       }
     }
-  }, [router])
+
+    if (router.isReady) {
+      loadOrderData()
+    }
+  }, [router, router.isReady, designId])
 
   function handleInputChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value })

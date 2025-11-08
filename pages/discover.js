@@ -209,9 +209,13 @@ export default function Discover() {
 		}
 	};
 
-	// Handle merch click - navigate to customize page with design
-	const handleMerchClick = (designId) => {
-		router.push(`/customize?design=${designId}`);
+	// Handle merch click - navigate to checkout page with design
+	const handleMerchClick = (designId, e) => {
+		if (e) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+		router.push(`/checkout?design=${designId}`);
 	};
 
 	// Helper function to format view counts
@@ -521,10 +525,10 @@ export default function Discover() {
 													{creator.merch.map((item) => {
 														const isLiked = userLikes.includes(item.id);
 														return (
-															<div
+															<Link
 																key={item.id}
+																href={`/checkout?design=${item.id}`}
 																className="min-w-[140px] bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-3 flex flex-col items-center cursor-pointer"
-																onClick={() => handleMerchClick(item.id)}
 															>
 																<img
 																	src={item.image}
@@ -535,15 +539,13 @@ export default function Discover() {
 																	{item.title}
 																</div>
 																<div className="flex items-center gap-2.5 mt-1">
-																	<button
-																		onClick={(e) =>
-																			handleLikeToggle(item.id, e)
-																		}
-																		className={`flex items-center gap-1 transition-all duration-200 ${
+																	<div
+																		className={`like-button flex items-center gap-1 transition-all duration-200 cursor-pointer ${
 																			isLiked
 																				? 'text-red-500'
 																				: 'text-gray-400 hover:text-red-500'
 																		}`}
+																		onClick={(e) => handleLikeToggle(item.id, e)}
 																	>
 																		<svg
 																			xmlns="http://www.w3.org/2000/svg"
@@ -562,7 +564,7 @@ export default function Discover() {
 																		<span className="font-medium text-xs">
 																			{item.likes}
 																		</span>
-																	</button>
+																	</div>
 																	<div className="flex items-center gap-1 text-gray-500">
 																		<svg
 																			xmlns="http://www.w3.org/2000/svg"
@@ -583,7 +585,7 @@ export default function Discover() {
 																		</span>
 																	</div>
 																</div>
-															</div>
+															</Link>
 														);
 													})}
 												</div>
