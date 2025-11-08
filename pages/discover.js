@@ -314,7 +314,7 @@ export default function Discover() {
 												href={`/?video=${video.id}`}
 												className="group flex-shrink-0"
 											>
-												<div className="relative w-[315px] h-[560px] rounded-2xl overflow-hidden bg-bg-card shadow-lg group-hover:shadow-xl transition-shadow duration-300 border border-bg-card-light">
+												<div className="relative w-[315px] h-[560px] rounded-2xl overflow-hidden bg-bg-card shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
 													{video.thumbnail &&
 													video.thumbnail.endsWith('.mp4') ? (
 														<video
@@ -334,7 +334,7 @@ export default function Discover() {
 													)}
 													<div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent">
 														<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-															<div className="w-16 h-16 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg border border-bg-card-light">
+															<div className="w-16 h-16 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl">
 																<svg
 																	className="w-7 h-7 text-white ml-1"
 																	fill="currentColor"
@@ -344,7 +344,7 @@ export default function Discover() {
 																</svg>
 															</div>
 														</div>
-														<div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full border border-bg-card-light">
+														<div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-lg">
 															{video.views} views
 														</div>
 														<div className="absolute bottom-0 left-0 right-0 p-5">
@@ -382,7 +382,7 @@ export default function Discover() {
 												<img
 													src={creator.avatar}
 													alt={creator.name}
-													className="w-16 h-16 rounded-full object-cover border-2 border-bg-card-light"
+													className="w-16 h-16 rounded-full object-cover shadow-md"
 												/>
 												<div className="flex-1">
 													<div className="text-xl font-bold text-text-primary mb-0.5">
@@ -406,14 +406,14 @@ export default function Discover() {
 															className="group block min-w-[160px]"
 															title={video.title}
 														>
-															<div className="relative w-40 h-24 rounded-xl overflow-hidden mb-2 bg-bg-card shadow-sm group-hover:shadow-md transition-shadow duration-300 border border-bg-card-light">
+															<div className="relative w-40 h-24 rounded-xl overflow-hidden mb-2 bg-bg-card shadow-md group-hover:shadow-lg transition-shadow duration-300">
 																<img
 																	src={video.thumbnail}
 																	alt={video.title}
 																	className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
 																/>
 																<div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors duration-300">
-																	<div className="w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center border border-bg-card-light">
+																	<div className="w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
 																		<svg
 																			className="w-5 h-5 text-white ml-0.5"
 																			fill="currentColor"
@@ -443,7 +443,7 @@ export default function Discover() {
 														return (
 															<div
 																key={item.id}
-																className="min-w-[140px] bg-gray-50 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-3 flex flex-col items-center cursor-pointer"
+																className="min-w-[140px] bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-3 flex flex-col items-center cursor-pointer"
 																onClick={() => handleMerchClick(item.id)}
 															>
 																<img
