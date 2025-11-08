@@ -418,11 +418,13 @@ export default function Discover() {
 													/>
 												</div>
 												<div className="flex-1 relative">
-													<div className="absolute -left-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-accent-orange/20 rounded-full -z-10"></div>
-													<div className="text-xl font-bold text-white mb-0.5 relative z-10">
-														{creator.name}
+													<div className="relative inline-block">
+														<div className="text-xl font-bold text-white mb-0.5 relative z-10">
+															{creator.name}
+														</div>
+														<div className="absolute -bottom-1 left-0 right-0 h-2 bg-accent-orange/40 rounded-full transform scale-x-110"></div>
 													</div>
-													<div className="text-sm text-white/90 relative z-10">
+													<div className="text-sm text-white/90 relative z-10 mt-1">
 														{creator.bio}
 													</div>
 												</div>
