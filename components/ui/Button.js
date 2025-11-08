@@ -19,10 +19,9 @@ export default function Button({
     lg: 'text-base px-6 py-3 gap-3'
   }
   const variants = {
-    primary: 'brand-gradient-bg text-white shadow-md hover:shadow-lg hover:brightness-110',
-    secondary: 'bg-white text-gray-800 shadow-sm hover:shadow-md border border-gray-200',
-    subtle: 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-    danger: 'bg-red-600 text-white hover:bg-red-700'
+    primary: 'bg-accent-orange text-white font-bold hover:bg-accent-orange-light', // Orange
+    secondary: 'bg-bg-card-light text-text-primary hover:bg-opacity-80', // Lighter Gray
+    subtle: 'bg-transparent text-text-secondary hover:bg-bg-card-light'
   }
   return (
     <Tag className={clsx(base, sizes[size], variants[variant], className)} {...rest}>
