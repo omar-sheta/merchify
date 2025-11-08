@@ -7,6 +7,7 @@ import { FALLBACK_CAPTURE_IMAGE } from '../lib/placeholders'
 export default function Customize() {
   const router = useRouter()
   const [capturedFrame, setCapturedFrame] = useState(null)
+  const [videoData, setVideoData] = useState(null) // Store video info
   const [selectedProduct, setSelectedProduct] = useState('tshirt')
   const [selectedColor, setSelectedColor] = useState('white')
   const [selectedSize, setSelectedSize] = useState('M')
@@ -17,9 +18,11 @@ export default function Customize() {
   const [generationError, setGenerationError] = useState(null)
 
   useEffect(() => {
-    // Load captured frame from sessionStorage
+    // Load captured frame and video data from sessionStorage
     if (typeof window !== 'undefined') {
       const frame = sessionStorage.getItem('capturedFrame')
+      const videoInfo = sessionStorage.getItem('videoData')
+      
       if (!frame) {
         // Redirect back to home if no frame captured
         router.push('/')
@@ -28,6 +31,15 @@ export default function Customize() {
         setCapturedFrame(normalizedFrame)
         if (normalizedFrame !== frame) {
           sessionStorage.setItem('capturedFrame', normalizedFrame)
+        }
+      }
+      
+      // Load video data if available
+      if (videoInfo) {
+        try {
+          setVideoData(JSON.parse(videoInfo))
+        } catch (e) {
+          console.warn('Could not parse video data:', e)
         }
       }
     }
@@ -103,9 +115,11 @@ export default function Customize() {
   }
 
   function proceedToCheckout() {
-    // Store order data
+    // Store order data including video information
     if (typeof window !== 'undefined') {
       const orderData = {
+        videoId: videoData?.id || null,
+        videoSrc: videoData?.src || null,
         capturedFrame,
         product: selectedProductData,
         color: colors.find(c => c.id === selectedColor),

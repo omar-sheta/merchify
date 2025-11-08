@@ -117,10 +117,18 @@ export default function Home() {
       const ctx = canvas.getContext('2d')
       try {
         ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height)
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.88)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.88)
         setCapturedFrame(dataUrl)
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('capturedFrame', dataUrl)
+          // Store video data along with the frame
+          if (activeVideo) {
+            sessionStorage.setItem('videoData', JSON.stringify({
+              id: activeVideo.id,
+              src: activeVideo.src,
+              title: activeVideo.title || 'Untitled Video'
+            }))
+          }
         }
         return
       } catch (err) {
@@ -133,6 +141,8 @@ export default function Home() {
     setCapturedFrame(imageUrl)
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('capturedFrame', imageUrl)
+      // No video data for fallback image
+      sessionStorage.removeItem('videoData')
     }
   }
 

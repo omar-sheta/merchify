@@ -20,6 +20,9 @@ export default function Navbar() {
           <Link href="/" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
             Home
           </Link>
+          <Link href="/feed" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+            Feed
+          </Link>
           <a
             href="https://github.com/omar-sheta/merchify"
             target="_blank"

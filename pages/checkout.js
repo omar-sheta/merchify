@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { saveDesign } from '../lib/firestore'
 
 export default function Checkout() {
   const router = useRouter()
@@ -16,6 +17,7 @@ export default function Checkout() {
   })
   const [isProcessing, setIsProcessing] = useState(false)
   const [orderComplete, setOrderComplete] = useState(false)
+  const [savedDesignId, setSavedDesignId] = useState(null)
 
   useEffect(() => {
     // Load order data from sessionStorage
@@ -38,16 +40,44 @@ export default function Checkout() {
     e.preventDefault()
     setIsProcessing(true)
 
-    // Simulate order processing
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    try {
+      // Simulate order processing
+      await new Promise(resolve => setTimeout(resolve, 1500))
 
-    setIsProcessing(false)
-    setOrderComplete(true)
+      // Save the design to Firestore (images will be uploaded to Storage)
+      console.log('Saving design and uploading images...')
+      const designData = {
+        videoId: orderData.videoId || null,
+        videoSrc: orderData.videoSrc || null,
+        capturedFrame: orderData.capturedFrame,
+        product: orderData.product,
+        color: orderData.color,
+        size: orderData.size,
+        quantity: orderData.quantity,
+        prompt: orderData.prompt || '',
+        mockupImage: orderData.mockupImage || null,
+        totalPrice: orderData.totalPrice,
+      }
 
-    // Clear session storage
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('capturedFrame')
-      sessionStorage.removeItem('orderData')
+      const designId = await saveDesign(designData)
+      setSavedDesignId(designId)
+      console.log('Design saved with ID:', designId)
+
+      setIsProcessing(false)
+      setOrderComplete(true)
+
+      // Clear session storage
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('capturedFrame')
+        sessionStorage.removeItem('orderData')
+      }
+    } catch (error) {
+      console.error('Error processing order:', error)
+      setIsProcessing(false)
+      
+      // Show more helpful error message
+      const errorMessage = error.message || 'There was an error processing your order.'
+      alert(`Error: ${errorMessage}\n\nPlease try again or contact support if the issue persists.`)
     }
   }
 
@@ -250,7 +280,7 @@ export default function Checkout() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Processing...
+                      Uploading & Processing...
                     </>
                   ) : (
                     <>

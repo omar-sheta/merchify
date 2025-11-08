@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { useRouter } from 'next/router'
+import { initializeUserDocument } from '../lib/firestore'
 
 const AuthContext = createContext({})
 
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser({
           uid: user.uid,
@@ -27,6 +28,16 @@ export const AuthProvider = ({ children }) => {
           displayName: user.displayName,
           photoURL: user.photoURL,
         })
+        
+        // Initialize user document in Firestore if it doesn't exist
+        try {
+          await initializeUserDocument(user.uid, {
+            email: user.email,
+            displayName: user.displayName,
+          })
+        } catch (error) {
+          console.error('Error initializing user document:', error)
+        }
       } else {
         setUser(null)
       }
