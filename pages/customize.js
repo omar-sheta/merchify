@@ -296,7 +296,13 @@ export default function Customize() {
                 <span className="text-sm text-gray-400">Total Price</span>
                 <div className="text-3xl font-bold text-gray-100">${totalPrice}</div>
               </div>
-              <Button onClick={proceedToCheckout} variant={generatedMockup ? 'primary' : 'subtle'} size="lg" className="min-w-[260px]">
+              <Button
+                onClick={proceedToCheckout}
+                variant={generatedMockup ? 'primary' : 'subtle'}
+                size="lg"
+                className="min-w-[260px]"
+                disabled={!generatedMockup} // Disable button if no mockup is generated
+              >
                 Proceed to Checkout
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
