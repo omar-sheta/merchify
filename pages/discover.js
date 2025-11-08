@@ -314,7 +314,7 @@ export default function Discover() {
 					<div className="w-full mb-12 pt-10">
 						<div className="max-w-[1600px] mx-auto px-8">
 							<div className="flex items-center justify-between mb-6">
-								<h2 className="text-3xl font-bold text-text-primary text-center justify-center w-full">
+								<h2 className="text-4xl pb-3 montserrat-bold pt-3 text-text-primary text-center justify-center w-full">
 									Trending Now
 								</h2>
 							</div>
@@ -433,7 +433,7 @@ export default function Discover() {
 
 					<div className="w-full px-8 pb-10">
 						<div className="max-w-[1600px] mx-auto">
-							<h1 className="text-3xl font-bold text-text-primary mb-8 text-center">
+							<h1 className="text-4xl montserrat-bold text-orange-500 font-extrabold mb-8 text-center">
 								Discover Creators
 							</h1>
 							{creators.length === 0 ? (
