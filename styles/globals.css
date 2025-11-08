@@ -1,36 +1,30 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  /* NEW JOKESTER PALETTE */
-  --bg-deep-black: #1C1C1C;
-  --bg-card: #3A3A3A;
-  --bg-card-light: #4A4A4A; /* For borders, inputs, hovers */
-  --accent-orange: #F46A1F;
-  --accent-orange-light: #FF8243;
-  --accent-yellow: #FFD338;
-
-  /* Standard text colors */
-  --text-primary: #FFFFFF;
-  --text-secondary: #A0A0A0; /* For subtitles */
-
-  /* Keep your font and radius vars */
-  --brand-radius-md: 14px;
-  --brand-font-display: "Inter", system-ui, sans-serif;
+@theme {
+  --color-bg-deep-black: #1C1C1C;
+  --color-bg-card: #3A3A3A;
+  --color-bg-card-light: #4A4A4A;
+  --color-accent-orange: #F46A1F;
+  --color-accent-orange-light: #FF8243;
+  --color-accent-yellow: #FFD338;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A0A0A0;
+  
+  --font-display: "Inter", system-ui, sans-serif;
+  --radius-md: 14px;
 }
 
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: var(--brand-font-display);
+  font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
 }
 
 body {
-  background-color: var(--bg-deep-black); /* #1C1C1C */
-  color: var(--text-primary); /* Default text is now white */
+  background-color: var(--color-bg-deep-black);
+  color: var(--color-text-primary);
 }
 
 a {
@@ -44,6 +38,7 @@ a {
 
 .brand-gradient-text {
   background: linear-gradient(to right, #F46A1F, #FFD338);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -52,10 +47,26 @@ a {
   background: linear-gradient(to right, #F46A1F, #FF8243);
 }
 
-/* This class is being deprecated in favor of the new Card component style */
-.glass-card {
-  background: var(--bg-card);
-  border-radius: var(--brand-radius-md);
-  border: 1px solid var(--bg-card-light);
-}
+/* Fallback utilities for custom color classes */
+.bg-bg-deep-black { background-color: var(--color-bg-deep-black); }
+.bg-bg-card { background-color: var(--color-bg-card); }
+.bg-bg-card-light { background-color: var(--color-bg-card-light); }
+.text-text-primary { color: var(--color-text-primary); }
+.text-text-secondary { color: var(--color-text-secondary); }
+.text-accent-orange { color: var(--color-accent-orange); }
+.text-accent-yellow { color: var(--color-accent-yellow); }
+.bg-accent-orange { background-color: var(--color-accent-orange); }
+.bg-accent-orange-light { background-color: var(--color-accent-orange-light); }
+.border-bg-card { border-color: var(--color-bg-card); }
+.border-bg-card-light { border-color: var(--color-bg-card-light); }
+
+/* Hover variants */
+.hover\:bg-bg-card:hover { background-color: var(--color-bg-card); }
+.hover\:bg-bg-card-light:hover { background-color: var(--color-bg-card-light); }
+.hover\:text-accent-orange:hover { color: var(--color-accent-orange); }
+.hover\:bg-accent-orange:hover { background-color: var(--color-accent-orange); }
+
+/* Ring color helpers */
+.ring-accent-orange { --tw-ring-color: var(--color-accent-orange); }
+.ring-offset-bg-card { --tw-ring-offset-color: var(--color-bg-card); }
 
