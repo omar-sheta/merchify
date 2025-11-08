@@ -14,7 +14,9 @@ export default function Discover() {
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [userLikes, setUserLikes] = useState([]);
 	const [currentUser, setCurrentUser] = useState(null);
+	const [currentCreatorIndex, setCurrentCreatorIndex] = useState(0);
 	const trendingScrollRef = useRef(null);
+	const creatorsScrollRef = useRef(null);
 	const router = useRouter();
 
 	const scroll = (ref, direction) => {
@@ -241,6 +243,31 @@ export default function Discover() {
 		return () => clearInterval(interval);
 	}, [currentSlide, trendingVideos.length]);
 
+	// Auto-scroll through creators
+	React.useEffect(() => {
+		if (creators.length === 0) return;
+
+		const interval = setInterval(() => {
+			setCurrentCreatorIndex((prev) => (prev + 1) % creators.length);
+		}, 6000); // Change creator every 6 seconds
+
+		return () => clearInterval(interval);
+	}, [creators.length]);
+
+	// Scroll to current creator
+	React.useEffect(() => {
+		if (creatorsScrollRef.current && creators.length > 0) {
+			const cardWidth = 400; // Width of each card
+			const gap = 32; // gap-8 = 32px
+			const scrollPosition = currentCreatorIndex * (cardWidth + gap);
+
+			creatorsScrollRef.current.scrollTo({
+				left: scrollPosition,
+				behavior: 'smooth',
+			});
+		}
+	}, [currentCreatorIndex, creators.length]);
+
 	return (
 		<div className="min-h-screen bg-bg-deep-black">
 			{loading ? (
@@ -372,7 +399,10 @@ export default function Discover() {
 									No creators available yet
 								</div>
 							) : (
-								<div className="flex gap-8 overflow-x-scroll pb-4 px-4 justify-center items-start snap-x snap-mandatory">
+								<div 
+									ref={creatorsScrollRef}
+									className="flex gap-8 overflow-x-scroll pb-4 px-4 justify-center items-start snap-x snap-mandatory scrollbar-hide"
+								>
 									{creators.map((creator) => (
 										<Card
 											key={creator.id}
