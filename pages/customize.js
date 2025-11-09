@@ -21,6 +21,7 @@ export default function Customize() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generationError, setGenerationError] = useState(null)
   const [loadingDesign, setLoadingDesign] = useState(false)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   // Load design from URL parameter if present
   useEffect(() => {
@@ -231,9 +232,10 @@ export default function Customize() {
                   <img 
                     src={generatedMockup} 
                     alt="AI-generated mockup"
-                    className="max-w-full max-h-96 mx-auto rounded-lg shadow-lg border-4 border-bg-card-light"
+                    onClick={() => setIsImageModalOpen(true)}
+                    className="max-w-full max-h-96 mx-auto rounded-lg shadow-lg border-4 border-bg-card-light cursor-pointer hover:border-accent-orange transition-all hover:scale-105"
                   />
-                  {/* generated tag removed per user request */}
+                  <p className="text-xs text-text-secondary mt-3">Click image to view full size</p>
                 </div>
               ) : (
                 <div className="text-center">
@@ -267,13 +269,10 @@ export default function Customize() {
             </Button>
 
             {generationError && (
-              <div className="bg-accent-yellow/10 rounded-lg p-4 border border-accent-yellow/20 mb-4">
+              <div className="bg-accent-yellow/10 rounded-lg p-4 border border-accent-yellow/20">
                 <p className="text-sm text-accent-yellow"><strong>Note:</strong> {generationError}</p>
               </div>
             )}
-            <div className="bg-bg-card-light/50 rounded-lg p-4 border border-bg-card-light text-sm text-text-secondary">
-              <strong>Tip:</strong> Add a short style or effect (e.g. "retro pop art" or "add neon outline"). Keep it under 140 characters.
-            </div>
           </Card>
 
           {/* Customization Options */}
@@ -435,6 +434,32 @@ export default function Customize() {
           </Card>
         </div>
       </div>
+
+      {/* Full-size Image Modal */}
+      {isImageModalOpen && generatedMockup && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+          onClick={() => setIsImageModalOpen(false)}
+        >
+          <button
+            onClick={() => setIsImageModalOpen(false)}
+            className="absolute top-4 right-4 text-white hover:text-accent-orange transition-colors p-2"
+            aria-label="Close"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="relative max-w-6xl max-h-[90vh]">
+            <img 
+              src={generatedMockup} 
+              alt="Full size mockup"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

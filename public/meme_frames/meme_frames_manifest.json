@@ -1,0 +1,146 @@
+[
+  {
+    "rank": 1,
+    "timestamp_sec": 10.0,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_01_t10.00s_score0.596.png",
+    "chunk": 1,
+    "scores": {
+      "total": 0.5956,
+      "clip_reaction": 0.6442,
+      "face": 0.3043,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 2,
+    "timestamp_sec": 12.0,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_02_t12.00s_score0.573.png",
+    "chunk": 1,
+    "scores": {
+      "total": 0.5732,
+      "clip_reaction": 0.6373,
+      "face": 0.2425,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 3,
+    "timestamp_sec": 47.6,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_03_t47.60s_score0.564.png",
+    "chunk": 2,
+    "scores": {
+      "total": 0.5641,
+      "clip_reaction": 0.6433,
+      "face": 0.2007,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 4,
+    "timestamp_sec": 40.4,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_04_t40.40s_score0.558.png",
+    "chunk": 2,
+    "scores": {
+      "total": 0.5582,
+      "clip_reaction": 0.6449,
+      "face": 0.1784,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 5,
+    "timestamp_sec": 45.8,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_05_t45.80s_score0.552.png",
+    "chunk": 2,
+    "scores": {
+      "total": 0.5524,
+      "clip_reaction": 0.6293,
+      "face": 0.1876,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 6,
+    "timestamp_sec": 59.8,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_06_t59.80s_score0.551.png",
+    "chunk": 2,
+    "scores": {
+      "total": 0.5511,
+      "clip_reaction": 0.636,
+      "face": 0.1711,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 7,
+    "timestamp_sec": 37.0,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_07_t37.00s_score0.536.png",
+    "chunk": 2,
+    "scores": {
+      "total": 0.5363,
+      "clip_reaction": 0.6393,
+      "face": 0.1155,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 8,
+    "timestamp_sec": 84.01,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_08_t84.01s_score0.561.png",
+    "chunk": 3,
+    "scores": {
+      "total": 0.5611,
+      "clip_reaction": 0.638,
+      "face": 0.2005,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 9,
+    "timestamp_sec": 80.14,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_09_t80.14s_score0.559.png",
+    "chunk": 3,
+    "scores": {
+      "total": 0.559,
+      "clip_reaction": 0.6344,
+      "face": 0.2002,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 10,
+    "timestamp_sec": 61.6,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_10_t61.60s_score0.557.png",
+    "chunk": 3,
+    "scores": {
+      "total": 0.5568,
+      "clip_reaction": 0.6237,
+      "face": 0.2125,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 11,
+    "timestamp_sec": 63.23,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_11_t63.23s_score0.556.png",
+    "chunk": 3,
+    "scores": {
+      "total": 0.5558,
+      "clip_reaction": 0.625,
+      "face": 0.2067,
+      "sharpness": 1.0
+    }
+  },
+  {
+    "rank": 12,
+    "timestamp_sec": 65.89,
+    "image": "/Users/Omar/Desktop/jokester/public/meme_frames/meme_12_t65.89s_score0.535.png",
+    "chunk": 3,
+    "scores": {
+      "total": 0.5351,
+      "clip_reaction": 0.6469,
+      "face": 0.0976,
+      "sharpness": 1.0
+    }
+  }
+]

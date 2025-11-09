@@ -63,7 +63,7 @@ function getColorVariant(colorName = 'white') {
 /* ----------------------------- Optimized Prompt Builder ---------------------------- */
 function buildPrompt(productType, colorHex, userPrompt) {
   const hasCustomPrompt = userPrompt && userPrompt.trim().length > 0;
-  const presenterRule = `\n**PRESERVE PRESENTER**\n- Do not remove, crop out, or replace the main presenter(s) appearing in Image 1. Keep the full body/face and context intact.\n- If the user's instruction explicitly says "caption only" or "take caption", then extract only the caption text/graphic from Image 1 and use that as the design; otherwise use the whole frame as-is.`;
+  const presenterRule = `\n**PRESERVE PEOPLE AND CAPTION**\n- Do NOT remove, crop out, or replace any people or caption in Image 1 unless the user's instruction explicitly says to do so.\n- By default, keep all people and caption visible and intact in the final design.\n- If the user's instruction explicitly says "caption only" or "remove people", then follow that; otherwise, always keep both people and caption.`;
   
   // Simplified, focused prompt for better reliability
   if (productType === 't-shirt' || productType === 'hoodie') {
